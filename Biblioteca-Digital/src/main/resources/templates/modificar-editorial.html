@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Modificar editorial</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+
+<body>
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<a href="/editoriales">
+    <i class="fas fa-arrow-left"></i>
+</a>
+
+<h1 class="mb-3">Modificar editorial</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="w-75 direction align-items-center text-light">
+        <div>
+            <div class="img-mod">
+                <img th:if="${editorial.foto != null}" class="rounded mx-auto d-block"
+                     th:src="${'/foto/editorial/' + editorial.id}" width="180px" height="190px" alt="Imagen Editorial"/>
+            </div>
+        </div>
+        <div class="mb-3">
+            <form th:action="@{/editoriales/actualizar}" method="POST" enctype="multipart/form-data">
+
+                <p th:if="${error != null}" th:text="${error}" class="error"></p>
+
+                <input type="hidden" th:value="${editorial.id}" name="id">
+
+                <div class="mb-3">
+                    <label for="nombre" class="col col-form-label">Nombre</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="text" class="form-control" id="nombre" name="nombre"
+                               th:value="${editorial.nombre}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="archivo" class="col col-form-label">Foto</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="file" class="form-control" id="archivo" name="archivo"/>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-primary">Modificar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

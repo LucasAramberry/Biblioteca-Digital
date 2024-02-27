@@ -1,0 +1,18 @@
+INSERT INTO autores (id, nombre, alta, baja, id_foto) VALUES("3ddd8dc2-d4c1-11ee-8549-d85ed3dfffce",'Herman Melville',NOW(),NULL, NULL);
+INSERT INTO autores (id, nombre, alta, baja, id_foto) VALUES("3ddde80e-d4c1-11ee-8549-d85ed3dfffce",'Harper Lee',NOW(),NULL, NULL);
+INSERT INTO autores (id, nombre, alta, baja, id_foto) VALUES("3dde3c30-d4c1-11ee-8549-d85ed3dfffce",'F. Scott Fitzgerald',NOW(),NULL, NULL);
+INSERT INTO autores (id, nombre, alta, baja, id_foto) VALUES("3dde9186-d4c1-11ee-8549-d85ed3dfffce",'George Orwell',NOW(),NULL, NULL);
+INSERT INTO autores (id, nombre, alta, baja, id_foto) VALUES("3ddeef10-d4c1-11ee-8549-d85ed3dfffce",'Miguel de Cervantes',NOW(),NULL, NULL);
+
+INSERT INTO editoriales (id, nombre, alta, baja, id_foto) VALUES ("3ddf63b8-d4c1-11ee-8549-d85ed3dfffce",'Penguin Classics',NOW(),NULL, NULL);
+INSERT INTO editoriales (id, nombre, alta, baja, id_foto) VALUES ("3ddfc70f-d4c1-11ee-8549-d85ed3dfffce",'Harper Perennial Modern Classics',NOW(),NULL, NULL);
+INSERT INTO editoriales (id, nombre, alta, baja, id_foto) VALUES ("3de02f3f-d4c1-11ee-8549-d85ed3dfffce",'Scribner',NOW(),NULL, NULL);
+INSERT INTO editoriales (id, nombre, alta, baja, id_foto) VALUES ("3de08ae9-d4c1-11ee-8549-d85ed3dfffce",'Signet Classics',NOW(),NULL, NULL);
+INSERT INTO editoriales (id, nombre, alta, baja, id_foto) VALUES ("3df05ae5-d4c1-11ee-8549-d85ed3dfffce",'Planeta',NOW(),NULL, NULL);
+
+INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_paginas, cantidad_copias, cantidad_copias_prestadas, cantidad_copias_restantes, alta, baja, id_autor, id_editorial, id_foto) VALUES (UUID(), '9780141439846', 'Moby Dick', 'Novela sobre la obsesión de un capitán de barco por cazar una ballena blanca', '1851-10-18', 624, 100, 20, 80, NOW(), NULL, "3ddd8dc2-d4c1-11ee-8549-d85ed3dfffce", "3ddf63b8-d4c1-11ee-8549-d85ed3dfffce", NULL);
+INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_paginas, cantidad_copias, cantidad_copias_prestadas, cantidad_copias_restantes, alta, baja, id_autor, id_editorial, id_foto) VALUES (UUID(), '9780061120084', 'To Kill a Mockingbird', 'Clásico de la literatura estadounidense que trata temas de justicia y moral', '1960-07-11', 336, 150, 30, 120, NOW(), NULL, "3ddde80e-d4c1-11ee-8549-d85ed3dfffce", "3ddfc70f-d4c1-11ee-8549-d85ed3dfffce", NULL);
+INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_paginas, cantidad_copias, cantidad_copias_prestadas, cantidad_copias_restantes, alta, baja, id_autor, id_editorial, id_foto) VALUES (UUID(), '9780743273565', 'The Great Gatsby', 'Historia de amor y decadencia en la era del jazz en Estados Unidos', '1925-04-10', 180, 200, 50, 150, NOW(), NULL, "3dde3c30-d4c1-11ee-8549-d85ed3dfffce", "3de02f3f-d4c1-11ee-8549-d85ed3dfffce", NULL);
+INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_paginas, cantidad_copias, cantidad_copias_prestadas, cantidad_copias_restantes, alta, baja, id_autor, id_editorial, id_foto) VALUES (UUID(), '9780451524935', '1984', 'Novela distópica que presenta una visión sombría del futuro', '1949-06-08', 328, 120, 10, 110, NOW(), NULL, "3dde9186-d4c1-11ee-8549-d85ed3dfffce", "3de08ae9-d4c1-11ee-8549-d85ed3dfffce", NULL);
+INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_paginas, cantidad_copias, cantidad_copias_prestadas, cantidad_copias_restantes, alta, baja, id_autor, id_editorial, id_foto) VALUES (UUID(), '9780140449297', 'Don Quijote', 'Clásico de la literatura española que narra las aventuras de un hidalgo enloquecido', '1605-01-16', 1056, 80, 5, 75, NOW(), NULL, "3ddeef10-d4c1-11ee-8549-d85ed3dfffce", "3df05ae5-d4c1-11ee-8549-d85ed3dfffce", NULL);
+

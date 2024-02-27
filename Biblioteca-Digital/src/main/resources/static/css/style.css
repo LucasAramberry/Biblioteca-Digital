@@ -1,0 +1,303 @@
+* {
+    box-sizing: border-box;
+    margin: 0%;
+    padding: 0%;
+}
+
+html{
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    min-height: 100%;
+    min-width: 100%;
+    margin: 0;
+    background: linear-gradient(160deg, rgba(0, 0, 0, 0.93) 20%, #212529 79.9%);
+    background-attachment: fixed;
+}
+
+h1 {
+    text-align: center;
+    color: #fff;
+}
+
+a{
+    text-decoration: none;
+}
+
+ul{
+    list-style: circle;
+}
+
+.boton-libro{
+    margin-bottom: 75px;
+}
+
+.error{
+    color: red;
+}
+
+.logout{
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.bg-none{
+    background-image: none;
+}
+
+/*******************************animacioness titulo****************************/
+
+.t-stroke {
+    color: transparent;
+    -moz-text-stroke-width: 2px;
+    -webkit-text-stroke-width: 2px;
+    -moz-text-stroke-color: #000000;
+    -webkit-text-stroke-color: #ffffff;
+}
+
+.t-shadow-halftone {
+    position: relative;
+}
+
+.t-shadow-halftone::after {
+
+    content: "¡Bienvenido a la Libreria!";
+    letter-spacing: 0px;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -moz-text-stroke-width: 0;
+    -webkit-text-stroke-width: 0;
+    position: absolute;
+    text-align: center;
+    left: 8px;
+    right: 0;
+    top: 6px;
+    z-index: -1;
+    transition: all 0.5s ease;
+}
+
+.centrar-boton{
+    margin: 0.2rem;
+}
+
+.centrar{
+    margin: 8rem auto;
+}
+
+.titulo{
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.nombreUsuario{
+    color: grey;
+    margin-bottom: 1rem;
+}
+
+.enlacesSub{
+    margin-bottom: 1.2rem;
+}
+
+.enlaces-sub{
+    text-decoration: none;
+    color: white;
+}
+
+.enlaces-sub:hover{
+    color: darkgray;
+}
+
+.direction{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.img-mod{
+    padding: 1rem;
+}
+
+.contenedor{
+    display: flex;
+    /*flex-direction: column;*/
+    flex-wrap: wrap;/*si activamos este desactivas el colum*/
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5rem;
+}
+
+.contenedorHijo{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.2rem;
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    max-width: 450px;
+}
+
+.imagen-card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/****************************************ESTILOS FOOTER**************************************/
+
+.pie {
+    margin-top: 5rem;
+    padding: 10px;
+    bottom: 0;
+    position: fixed;
+}
+
+.pie p {
+    margin-bottom: 0;
+}
+
+.enlacesFooter{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0%;
+    margin-bottom: 0;
+}
+
+.enlacesFooter ul a{
+    display: flex;
+    justify-content: space-around;
+    text-decoration: none;
+    list-style: none;
+}
+
+.liFooter{
+    display: flex;
+    justify-content: space-around;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    color: #fff;
+    font-weight: lighter;
+    font-size: smaller;
+}
+
+.liFooter:hover{
+    color: rgb(114, 114, 114);
+}
+
+button{
+    cursor: pointer;
+}
+
+li:hover{
+    opacity: 0.4;
+}
+
+/****************************************ESTILOS FILTRAR**************************************/
+
+.filtrar{
+    width: 400px;
+    height: 125px;
+    text-align: center;
+    border-style: double;
+    border-color: #212529;
+    margin: 1% auto;
+    margin-bottom: 1rem;
+}
+
+.filtrar-select{
+    margin: 1% auto;
+    width: 300px;
+    height: 30px
+}
+
+.filtrar-boton{
+    margin: 2% auto
+}
+
+/***********************************ESTILOS PAGINA LIBRO*****************************************/
+
+.contenedor1{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5rem;
+    padding: 1rem;
+}
+
+.img-fluid1{
+    width: 13.5rem;
+    height: 20rem;
+}
+
+.card-body1{
+    margin: 2% auto;
+    padding: 0.2rem;
+}
+
+.card-prestamo{
+    /*    display: flex;
+        justify-content: space-around;*/
+    margin: 2% auto;
+}
+
+.lista-prestamos{
+    padding-left: 5px;
+}
+
+.fechas{
+    display: flex;
+    justify-content: center;
+    margin: 2% auto;
+}
+
+.inputFecha {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.card-title1{
+    text-align: center;
+    margin-top: 2%
+}
+
+.items{
+    margin-bottom: 2%;
+    list-style: circle;
+}
+
+/* Estilos para pantallas pequeñas (ejemplo: teléfonos móviles) */
+@media screen and (max-width: 768px) {
+
+    body {
+        font-size: 14px;/*Tamaño de fuente más pequeño para pantallas pequeñas*/
+    }
+
+    .titulo{
+        font-size: 2.5rem;
+        margin-bottom: 2%;
+    }
+
+    /****************************************ESTILOS FILTRAR**************************************/
+
+    .filtrar{
+        width: 300px;
+    }
+
+    .filtrar-select{
+        width: 275px;
+    }
+
+    .direction{
+        flex-direction: column;
+        margin-bottom: 4rem;
+    }
+
+    .img-mod{
+        padding: 1rem;
+    }
+}

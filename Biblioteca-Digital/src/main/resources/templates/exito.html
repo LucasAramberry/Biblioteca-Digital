@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Exito</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+<body class="bg-none bg-success">
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<section class="centrar">
+    <h2 class="text-center text-light" th:text="${titulo}"></h2>
+    <p class="text-center text-light" th:text="${descripcion}"></p>
+</section>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

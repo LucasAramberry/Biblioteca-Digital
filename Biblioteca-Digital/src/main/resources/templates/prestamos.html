@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Prestamos</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+<body>
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<h1 sec:authorize="hasRole('ROLE_USUARIO')">Mis Prestamos</h1>
+<h1 sec:authorize="hasRole('ROLE_ADMIN')">Lista Prestamos</h1>
+
+<div class="form-group2 centrar-boton text-center">
+    <a href="/prestamos/registro" class="btn btn-dark" tabindex="-1" role="button">Agregar prestamo</a>
+</div>
+
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <div class="filtrar bg-dark text-white">
+        <div>
+            <h5>Buscar prestamo por Usuario</h5>
+        </div>
+        <div>
+            <form action="/prestamos" method="GET" enctype="multipart/form-data">
+                <select class="filtrar-select" name="idUsuario">
+                    <option selected>Todos</option>
+                    <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.mail}"
+                            th:selected="${usuarioSelected != null && usuario.id == usuarioSelected.id}"></option>
+                </select>
+
+                <div class="filtrar-boton">
+                    <button type="submit" class="btn btn-warning">Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="contenedor">
+    <div class="contenedorHijo" th:each="prestamo : ${prestamos}">
+        <div class="card mb-3 bg-dark text-white">
+            <div class="row g-0">
+                <div>
+                    <div class="card-body">
+                        <strong class="text-center text-success" th:if="${prestamo.baja == null}"
+                                th:text="'ACTIVO '"></strong>
+                        <strong class="text-center text-danger" th:unless="${prestamo.baja == null}"
+                                th:text="'INACTIVO '"></strong>
+
+                        <a sec:authorize="hasRole('ADMIN')" th:if="${prestamo.baja != null}"
+                           th:href="@{/prestamos/alta(id=__${prestamo.id}__)}" title="Dar de Alta"><i
+                                class="fa fa-arrow-up text-success"></i></a>
+                        <a sec:authorize="hasRole('ADMIN')" th:unless="${prestamo.baja != null}"
+                           th:href="@{/prestamos/baja(id=__${prestamo.id}__)}" title="Dar de Baja"><i
+                                class="fa fa-arrow-down text-danger"></i></a>
+
+                        <a sec:authorize="hasRole('ADMIN')" th:href="@{/prestamos/modificar(id=__${prestamo.id}__)}"
+                           title="Modificar"><i class="fas fa-feather-alt text-warning"></i></a>
+                        <a sec:authorize="hasRole('ADMIN')" th:href="@{/prestamos/eliminar(id=__${prestamo.id}__)}"
+                           title="Eliminar"><i class="fas fa-feather-alt text-warning"></i></a>
+
+                        <ul class="lista-prestamos">
+                            <li sec:authorize="hasRole('ADMIN')" th:text="'USUARIO: ' + ${prestamo.usuario.mail}"></li>
+                            <li th:text="'FECHA PRESTAMO: ' + ${prestamo.fechaPrestamo}"></li>
+                            <li th:text="'FECHA DEVOLUCION: ' + ${prestamo.fechaDevolucion}"></li>
+                            <li th:text="'LIBRO: ' + ${prestamo.libro.titulo}"></li>
+                            <li th:text="'AUTOR: ' + ${prestamo.libro.autor.nombre}"></li>
+                            <li th:text="'EDITORIAL: ' + ${prestamo.libro.editorial.nombre}"></li>
+                            <li sec:authorize="hasRole('ADMIN')" th:text="'ALTA: ' + ${prestamo.alta}"></li>
+                            <li sec:authorize="hasRole('ADMIN')" th:text="'BAJA: ' + ${prestamo.baja}"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

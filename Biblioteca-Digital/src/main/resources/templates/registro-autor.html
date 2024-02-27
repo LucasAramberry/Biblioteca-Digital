@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Registrar autor</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+
+<body>
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<a href="/author">
+    <i class="fas fa-arrow-left"></i>
+</a>
+
+<h1 class="mb-3">Registrar autor</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="w-75 text-light d-flex justify-content-center">
+        <div class="mb-3">
+            <form th:action="@{/author/register}" method="POST" enctype="multipart/form-data" th:object="${author}">
+
+                <div class="mb-3">
+                    <label for="name" class="col col-form-label">Nombre</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="text" class="form-control" id="name" name="name" th:field="*{name}"/>
+                    </div>
+                </div>
+
+                <span th:errors="*{name}" class="error" th:if="${#fields.hasErrors('name')}"></span>
+
+                <div class="mb-3">
+                    <label for="file" class="col col-form-label">Foto</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="file" class="form-control" id="file" name="file" th:field="*{photoDto.file}"/>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!--HEAD-->
+<head>
+    <title>Biblioteca - Libro</title>
+</head>
+<head th:replace="~{/fragments/head :: head}"></head>
+
+<!--BODY-->
+<body>
+
+<!--NAV-->
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<a href="/libros">
+    <i class="fas fa-arrow-left"></i>
+</a>
+
+<div class="contenedor1">
+    <div class="contenedorHijo1">
+        <div class="mb-3 bg-dark text-white">
+            <div class="row g-0">
+                <div class="col-md-4 d-flex justify-content-center align-items-center">
+                    <img th:src="@{'/foto/libro/' + ${libro.id}}" class="img-fluid1 rounded-start" alt="Portada Libro">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body1">
+                        <h5 class="text-center" th:text="${libro.titulo}"></h5><br>
+                        <ul>
+                            <li sec:authorize="hasRole('ADMIN')" class="items" th:text="'ID: ' + ${libro.id}"></li>
+                            <li class="items" th:text="'ISBN: ' + ${libro.isbn}"></li>
+                            <li class="items" th:text="'DESCRIPCION: ' + ${libro.descripcion}"></li>
+                            <li class="items" th:text="'FECHA: ' + ${libro.fechaPublicacion}"></li>
+                            <li class="items" th:text="'CANTIDAD DE PAGINAS: ' + ${libro.fechaPublicacion}"></li>
+                            <li class="items" th:text="'AUTOR: ' + ${libro.autor.nombre}"></li>
+                            <li class="items" th:text="'EDITORIAL: ' + ${libro.editorial.nombre}"></li>
+                            <li sec:authorize="hasRole('ADMIN')" class="items"
+                                th:text="'EJEMPLARES: ' + ${libro.ejemplares}"></li>
+                            <li sec:authorize="hasRole('ADMIN')" class="items"
+                                th:text="'EJEMPLARES PRESTADOS: ' + ${libro.ejemplaresPrestados}"></li>
+                            <li class="items" th:text="'EJEMPLARES DISPONIBLES: ' + ${libro.ejemplaresRestantes}"></li>
+                            <li sec:authorize="hasRole('ADMIN')" class="items" th:text="'ALTA: ' + ${libro.alta}"></li>
+                            <li sec:authorize="hasRole('ADMIN')" class="items" th:text="'BAJA: ' + ${libro.baja}"></li>
+
+                        </ul>
+                        <!--SECCION ADMIN-->
+                        <div sec:authorize="hasRole('ADMIN')" class="text-center">
+                            <a class="btn btn-success" th:if="${libro.baja != null}"
+                               th:href="@{/libros/alta(id=__${libro.id}__)}" role="button">DAR ALTA</a>
+                            <a class="btn btn-danger" th:unless="${libro.baja != null}"
+                               th:href="@{/libros/baja(id=__${libro.id}__)}" role="button">DAR BAJA</a>
+                            <a class="btn btn-warning" th:href="@{/libros/modificar(id=__${libro.id}__)}" role="button">MODIFICAR</a>
+                            <a class="btn btn-danger" th:href="@{/libros/eliminar/__${libro.id}__}" role="button">ELIMINAR</a>
+                            <a class="btn btn-dark" th:href="@{/libros}" role="button">VOLVER</a>
+                        </div>
+                    </div>
+                    <!--SECCION USUARIO-->
+                    <div sec:authorize="hasRole('ROLE_USUARIO')" class="card-prestamo">
+                        <form th:action="@{/prestamos/registrar}" method="POST" th:object="${prestamo}">
+                            <div>
+                                <div class="text-center">
+                                    <h5>Prestamo</h5>
+                                    <p>Si desea realizar un prestamo de este libro complete lo siguiente:</p>
+                                </div>
+                            </div>
+                            <div class="fechas">
+                                <!--                                        <div class="inputFecha">-->
+                                <!--                                            <label id="colorLabel" for="fechaPrestamo">Fecha Prestamo</label>-->
+                                <!--                                            <input type="date" readonly class="form-control" name="fechaPrestamo" th:value="LocalDate.now()">-->
+                                <!--                                        </div>-->
+                                <div class="inputFecha">
+                                    <label id="colorLabel" for="dateReturn">Fecha Devolucion</label>
+                                    <input type="date" class="form-control" id="dateReturn" name="dateReturn"
+                                           th:field="*{dateReturn}">
+                                </div>
+
+                                <div>
+                                    <input type="hidden" class="form-control" name="idLibro" th:value="${libro.id}"/>
+                                </div>
+
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <div class="form-group2">
+                                    <button type="submit" class="btn btn-danger">Crear Prestamo</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--PIE PAGINA-->
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

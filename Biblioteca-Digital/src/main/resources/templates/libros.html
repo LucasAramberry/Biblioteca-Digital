@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Libros</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+<body>
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<div>
+    <h1 class="text-center text-white">LIBROS DISPONIBLES</h1>
+</div>
+
+<!--FILTRAR-->
+<div class="dropdown text-center form-group2">
+    <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
+       aria-expanded="false">
+        Filtrar por...
+    </a>
+
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <li><a class="dropdown-item" href="/autores">Autor</a></li>
+        <li><a class="dropdown-item" href="/editoriales">Editorial</a></li>
+    </ul>
+</div>
+
+<div class="filtrar bg-dark text-white">
+    <div><h5>Buscar libro por titulo</h5></div>
+    <div>
+        <form action="/libros" method="GET" enctype="multipart/form-data">
+            <select class="filtrar-select" name="idLibro">
+                <option selected disabled>Seleccionar</option>
+                <option>Todos</option>
+                <option th:each="libro : ${librosA}" th:value="${libro.id}" th:text="${libro.title}"></option>
+            </select>
+            <div class="filtrar-boton">
+                <button type="submit" class="btn btn-warning">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div sec:authorize="hasRole('ADMIN')" class="form-group2 centrar-boton text-center">
+    <a href="/libros/registro" class="btn btn-dark" tabindex="-1" role="button">Agregar libro</a>
+</div>
+
+<div class="contenedor">
+    <div class="contenedorHijo" th:each="libro : ${libros}">
+        <div class="card mb-3 bg-dark text-white">
+            <div class="row g-0">
+                <div class="col-md-4 imagen-card">
+                    <img th:src="@{'/foto/libro/' + ${libro.id}}" class="img-fluid rounded-start" alt="Portada Libro">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${libro.title}"></h5><br>
+                        <ul>
+                            <li th:text="'ISBN: ' + ${libro.isbn}"></li>
+                            <li th:text="'AUTOR: ' + ${libro.author.name}"></li>
+                            <li th:text="'EDITORIAL: ' + ${libro.publisher.name}"></li>
+                            <li th:text="'EJEMPLARES DISPONIBLES: ' + ${libro.amountCopies}"></li>
+                        </ul>
+                        <div class="form-group2 text-center">
+                            <a class="btn btn-warning" th:href="@{/libros/mostrar/__${libro.id}__}" role="button">Ver
+                                más</a>
+                            <a sec:authorize="hasRole('ADMIN')" th:if="${libro.baja != null}"
+                               th:href="@{/libros/alta(id=__${libro.id}__)}" title="Dar de Alta"><i
+                                    class="fa fa-arrow-up text-success"></i></a>
+                            <a sec:authorize="hasRole('ADMIN')" th:unless="${libro.baja != null}"
+                               th:href="@{/libros/baja(id=__${libro.id}__)}" title="Dar de Baja"><i
+                                    class="fa fa-arrow-down text-danger"></i></a>
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/libros/modificar(id=__${libro.id}__)}"
+                               title="Modificar"><i class="fas fa-feather-alt text-warning"></i></a>
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/libros/eliminar(id=__${libro.id}__)}"
+                               title="Eliminar"><i class="fas fa-archive text-danger"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Editar perfil</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+
+<body>
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<a href="/">
+    <i class="fas fa-arrow-left"></i>
+</a>
+
+<h1 class="mb-3">Editar perfil</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="w-75 direction text-light">
+        <div>
+            <div class="img-mod">
+                <img th:if="${usuario.foto != null}" class="rounded mx-auto d-block"
+                     th:src="${'/foto/usuario/' + usuario.id}" width="180px" height="190px" alt="Foto de perfil"/>
+            </div>
+        </div>
+        <div class="mb-3">
+            <form th:action="@{/usuario/actualizar-perfil}" method="POST" enctype="multipart/form-data">
+
+                <p th:if="${error != null}" th:text="${error}" class="error"></p>
+
+                <input type="hidden" name="id" th:value="${usuario.id}">
+
+                <div class="mb-3">
+                    <label for="nombre" class="col col-form-label">Nombre</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="text" class="form-control" id="nombre" name="nombre" th:value="${usuario.nombre}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="apellido" class="col col-form-label">Apellido</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="text" class="form-control" id="apellido" name="apellido"
+                               th:value="${usuario.apellido}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="documento" class="col col-form-label">Documento</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="text" class="form-control" id="documento" name="documento"
+                               th:value="${usuario.documento}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="telefono" class="col col-form-label">Telefono</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="text" class="form-control" id="telefono" name="telefono"
+                               th:value="${usuario.telefono}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="sexo" class="col col-form-label">Sexo</label>
+                    <div class="col-sm-10 w-100">
+                        <select class="form-select" id="sexo" name="sexo">
+                            <option th:each="sexo : ${sexos}" th:value="${sexo}" th:text="${sexo}"
+                                    th:selected="${usuario.sexo != null && sexo == usuario.sexo}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="idZona" class="col col-form-label">Zona</label>
+                    <div class="col-sm-10 w-100">
+                        <select class="form-select" id="idZona" name="idZona">
+                            <option th:each="zona : ${zonas}" th:value="${zona.id}" th:text="${zona.nombre}"
+                                    th:selected="${usuario.zona != null && zona.id == usuario.zona.id}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="archivo" class="col col-form-label">Foto</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="file" class="form-control" id="archivo" name="archivo"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="mail" class="col col-form-label">E-mail</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="email" class="form-control" id="mail" name="mail" th:value="${usuario.mail}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="clave" class="col col-form-label">Contraseña</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="password" class="form-control" id="clave" name="clave" th:value="${clave}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="clave2" class="col col-form-label">Repetir Contraseña</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="password" class="form-control" id="clave2" name="clave2" th:value="${clave2}"/>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-primary boton-libro">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

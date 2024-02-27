@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Error</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+<body class="bg-none bg-danger">
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<section class="centrar">
+    <h2 class="text-center text-light" th:text="${codigo}"></h2>
+    <p class="text-center text-light" th:text="${mensaje == null ? 'Intenta nuevamente' : mensaje}"></p>
+    <a class="enlaces-sub d-flex justify-content-center" href="/">
+        <button type="button" class="btn btn-danger btn-sm">Volver</button>
+    </a>
+</section>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>

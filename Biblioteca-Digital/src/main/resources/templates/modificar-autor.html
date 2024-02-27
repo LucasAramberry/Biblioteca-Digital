@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Biblioteca - Modificar autor</title>
+    <head th:replace="~{/fragments/head :: head}"></head>
+</head>
+
+<body>
+<nav th:replace="~{/fragments/navbar :: nav}"></nav>
+
+<a href="/autores">
+    <i class="fas fa-arrow-left"></i>
+</a>
+
+<h1 class="mb-3">Modificar autor</h1>
+
+<div class="d-flex justify-content-center">
+    <div class="w-75 direction align-items-center text-light">
+
+        <div>
+            <div class="img-mod">
+                <img th:if="${author.photoDto != null}" class="rounded mx-auto d-block" th:src="${'/photo/author/' + author.id}"
+                     width="180px" height="190px" alt="Imagén Autor"/>
+            </div>
+        </div>
+
+        <div class="mb-3">
+
+            <form th:action="@{/author/update}" method="POST" enctype="multipart/form-data" th:object="${author}">
+
+                <p th:if="${error != null}" th:text="${error}" class="error"></p>
+
+                <input type="hidden" th:field="*{id}" name="id">
+
+                <div class="mb-3">
+                    <label for="name" class="col col-form-label">Nombre</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="text" class="form-control" id="name" name="name" th:field="*{name}"/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="file" class="col col-form-label">Foto</label>
+                    <div class="col-sm-10 w-100">
+                        <input type="file" class="form-control" id="file" name="file" th:field="*{photoDto.file}"/>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-primary">Modificar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
+
+<script th:replace="~{/fragments/script :: script}"></script>
+</body>
+</html>
