@@ -51,8 +51,8 @@
                             <li sec:authorize="hasRole('ADMIN')" th:text="'BAJA: ' + ${author.unsubscribe}"></li>
                         </ul>
 
-                        <!--                        <div sec:authorize="hasRole('ADMIN')" class="form-group2 text-center">-->
-                        <div class="form-group2 text-center">
+                        <div sec:authorize="hasRole('ADMIN')" class="form-group2 text-center">
+                            <!--                        <div class="form-group2 text-center">-->
 
                             <a th:if="${author.unsubscribe != null}" th:href="@{/author/high(id=__${author.id}__)}">
                                 <button type="button" class="btn btn-success btn-sm">Dar alta</button>

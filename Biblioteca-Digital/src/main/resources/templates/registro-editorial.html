@@ -8,7 +8,7 @@
 <body>
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
-<a href="/editoriales">
+<a href="/publisher">
     <i class="fas fa-arrow-left"></i>
 </a>
 
@@ -17,21 +17,23 @@
 <div class="d-flex justify-content-center">
     <div class="w-75 text-light d-flex justify-content-center">
         <div class="mb-3">
-            <form th:action="@{/editoriales/registrar}" method="POST" enctype="multipart/form-data">
+            <form th:action="@{/publisher/register}" method="POST" enctype="multipart/form-data"
+                  th:object="${publisher}">
 
                 <p th:if="${error != null}" th:text="${error}" class="error"></p>
 
                 <div class="mb-3">
-                    <label for="nombre" class="col col-form-label">Nombre</label>
+                    <label for="name" class="col col-form-label">Nombre</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="nombre" name="nombre" th:value="${nombre}"/>
+                        <input type="text" class="form-control" id="name" name="name" th:field="*{name}"/>
                     </div>
+                    <span th:errors="*{name}" class="text-danger" th:if="${#fields.hasErrors('name')}"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label for="archivo" class="col col-form-label">Foto</label>
+                    <label for="file" class="col col-form-label">Foto</label>
                     <div class="col-sm-10 w-100">
-                        <input type="file" class="form-control" id="archivo" name="archivo"/>
+                        <input type="file" class="form-control" id="file" name="file" th:field="*{photoDto.file}"/>
                     </div>
                 </div>
 
@@ -41,9 +43,10 @@
             </form>
         </div>
     </div>
+</div>
 
-    <footer th:replace="~{/fragments/footer :: footer}"></footer>
+<footer th:replace="~{/fragments/footer :: footer}"></footer>
 
-    <script th:replace="~{/fragments/script :: script}"></script>
+<script th:replace="~{/fragments/script :: script}"></script>
 </body>
 </html>

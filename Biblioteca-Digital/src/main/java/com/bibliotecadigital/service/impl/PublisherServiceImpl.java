@@ -58,11 +58,9 @@ public class PublisherServiceImpl implements IPublisherService {
     @Override
     public void update(String id, PublisherDto publisherDto) {
 
-        Optional<Publisher> response = findById(id);
+        Publisher publisher = findById(id);
 
-        if (response.isPresent()) {
-
-            Publisher publisher = response.get();
+        if (publisher != null) {
 
             publisher.setName(publisherDto.getName());
 
@@ -93,11 +91,9 @@ public class PublisherServiceImpl implements IPublisherService {
     @Transactional
     public void high(String id) {
 
-        Optional<Publisher> response = findById(id);
+        Publisher publisher = findById(id);
 
-        if (response.isPresent()) {
-
-            Publisher publisher = response.get();
+        if (publisher != null) {
 
             publisher.setUnsubscribe(null);
 
@@ -119,11 +115,9 @@ public class PublisherServiceImpl implements IPublisherService {
     @Transactional
     public void low(String id) {
 
-        Optional<Publisher> response = findById(id);
+        Publisher publisher = findById(id);
 
-        if (response.isPresent()) {
-
-            Publisher publisher = response.get();
+        if (publisher != null) {
 
             publisher.setUnsubscribe(LocalDateTime.now());
 
@@ -145,11 +139,9 @@ public class PublisherServiceImpl implements IPublisherService {
     @Override
     public void delete(String id) {
 
-        Optional<Publisher> response = findById(id);
+        Publisher publisher = findById(id);
 
-        if (response.isPresent()) {
-
-            Publisher publisher = response.get();
+        if (publisher != null) {
 
             publisherDAO.delete(publisher);
 
@@ -207,8 +199,8 @@ public class PublisherServiceImpl implements IPublisherService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Optional<Publisher> findById(String id) {
-        return publisherDAO.findById(id);
+    public Publisher findById(String id) {
+        return publisherDAO.findById(id).orElse(null);
     }
 
     @Transactional

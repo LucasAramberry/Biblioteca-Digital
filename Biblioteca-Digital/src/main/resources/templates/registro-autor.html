@@ -24,9 +24,8 @@
                     <div class="col-sm-10 w-100">
                         <input type="text" class="form-control" id="name" name="name" th:field="*{name}"/>
                     </div>
+                    <span th:errors="*{name}" class="text-danger" th:if="${#fields.hasErrors('name')}"></span>
                 </div>
-
-                <span th:errors="*{name}" class="error" th:if="${#fields.hasErrors('name')}"></span>
 
                 <div class="mb-3">
                     <label for="file" class="col col-form-label">Foto</label>

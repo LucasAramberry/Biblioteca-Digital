@@ -35,7 +35,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             HttpSession session = attr.getRequest().getSession(true);
-            session.setAttribute("usuariosession", usuario);
+            session.setAttribute("usersession", usuario);
 
             User user = new User(usuario.getEmail(), usuario.getPassword(), permisos);
             return user;

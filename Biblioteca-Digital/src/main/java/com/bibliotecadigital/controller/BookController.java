@@ -3,6 +3,7 @@ package com.bibliotecadigital.controller;
 import com.bibliotecadigital.dto.BookDto;
 import com.bibliotecadigital.dto.LoanDto;
 import com.bibliotecadigital.entity.Author;
+import com.bibliotecadigital.entity.Book;
 import com.bibliotecadigital.entity.Publisher;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IBookService;
@@ -16,13 +17,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Lucas Aramberry
  */
-//@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
 @Controller
-@RequestMapping("/libros")
+@RequestMapping("/book")
 public class BookController {
 
     @Autowired
@@ -32,102 +33,120 @@ public class BookController {
     @Autowired
     private IPublisherService publisherService;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping("/mostrar/{id}")
-    public String viewBooks(@PathVariable String id, ModelMap modelo) {
-        //pasamos la fecha actual por si qremos realizar el prestamo
-        modelo.addAttribute("prestamo", LoanDto.builder().build());
+    @GetMapping
+    public String books(ModelMap model, @RequestParam(required = false) String idBook, @RequestParam(required = false) String idAuthor, @RequestParam(required = false) String idPublisher) {
 
-        modelo.put("libro", bookService.findById(id));
+        List<Book> bookActive = bookService.listBookActive();
+        model.put("bookActive", bookActive);
+
+        List<Book> books = bookService.listBookInactive();
+        model.addAttribute("books", books);
+
+        if (idBook != null) {
+            Optional<Book> bookForTitle = bookService.findById(idBook);
+            model.addAttribute("books", bookForTitle.get());
+        }
+
+        return "libros.html";
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/view/{id}")
+
+    public String viewBooks(@PathVariable String id, ModelMap model) {
+        //pasamos la fecha actual por si qremos realizar el prestamo
+        model.addAttribute("loan", LoanDto.builder().build());
+
+        model.put("book", bookService.findById(id));
 
         return "libro.html";
     }
 
     //    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/registro")
-    public String registerBook(ModelMap modelo) {
+    @GetMapping("/register")
+    public String registerBook(ModelMap model) {
 
-        List<Author> autores = authorService.findAll();
-        List<Publisher> editoriales = publisherService.findAll();
+        List<Author> authors = authorService.findAll();
+        List<Publisher> publishers = publisherService.findAll();
 
-        modelo.addAttribute("libro", BookDto.builder().build());
-        modelo.put("autores", autores);
-        modelo.put("editoriales", editoriales);
+        model.addAttribute("book", BookDto.builder().build());
+        model.put("authors", authors);
+        model.put("publishers", publishers);
 
         return "registro-libro.html";
     }
 
     //    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/registrar")
-    public String registerBook(ModelMap modelo, @ModelAttribute(name = "libro") @Valid BookDto bookDto, BindingResult result) {
+    @PostMapping("/register")
+    public String registerBook(ModelMap model, @ModelAttribute(name = "book") @Valid BookDto bookDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            modelo.addAttribute("libro", bookDto);
-            List<Author> autores = authorService.findAll();
-            List<Publisher> editoriales = publisherService.findAll();
-            modelo.put("autores", autores);
-            modelo.put("editoriales", editoriales);
+            model.addAttribute("book", bookDto);
+            List<Author> authors = authorService.findAll();
+            List<Publisher> publishers = publisherService.findAll();
+            model.put("authors", authors);
+            model.put("publishers", publishers);
             return "registro-libro.html";
         }
 
         bookService.register(bookDto);
 
-        modelo.put("titulo", "Registro exitoso!");
-        modelo.put("descripcion", "El libro ingresado fue registrado correctamente.");
+        model.put("titulo", "Registro exitoso!");
+        model.put("descripcion", "El libro ingresado fue registrado correctamente.");
 
         return "exito.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/modificar")
-    public String updateBook(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/update")
+    public String updateBook(ModelMap model, @RequestParam String id) {
 
-        List<Author> autores = authorService.findAll();
-        modelo.put("autores", autores);
+        List<Author> authors = authorService.findAll();
+        model.put("authors", authors);
 
-        List<Publisher> editoriales = publisherService.findAll();
-        modelo.put("editoriales", editoriales);
+        List<Publisher> publishers = publisherService.findAll();
+        model.put("publishers", publishers);
 
-        modelo.addAttribute("libro", bookService.findById(id));
+        model.addAttribute("book", bookService.findById(id));
 
         return "modificar-libro.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/actualizar")
-    public String modificarLibro(ModelMap modelo, @RequestParam String id, @ModelAttribute(name = "libro") @Valid BookDto bookDto, BindingResult result) {
+    @PostMapping("/update")
+    public String updateBook(ModelMap model, @RequestParam String id, @ModelAttribute(name = "book") @Valid BookDto bookDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            modelo.addAttribute("libro", bookDto);
-            List<Author> autores = authorService.findAll();
-            List<Publisher> editoriales = publisherService.findAll();
-            modelo.put("autores", autores);
-            modelo.put("editoriales", editoriales);
+            model.addAttribute("book", bookDto);
+            List<Author> authors = authorService.findAll();
+            List<Publisher> publishers = publisherService.findAll();
+            model.put("authors", authors);
+            model.put("publishers", publishers);
             return "modificar-libro.html";
         }
 
         bookService.update(id, bookDto);
-        return "redirect:/libros";
+        return "redirect:/book";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/baja")
-    public String low(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/low")
+    public String low(ModelMap model, @RequestParam String id) {
         bookService.low(id);
-        return "redirect:/libros";
+        return "redirect:/book";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/alta")
-    public String high(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/high")
+    public String high(ModelMap model, @RequestParam String id) {
         bookService.high(id);
-        return "redirect:/libros";
+        return "redirect:/book";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/eliminar")
-    public String delete(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/delete")
+    public String delete(ModelMap model, @RequestParam String id) {
         bookService.delete(id);
-        return "redirect:/libros";
+        return "redirect:/book";
     }
 }

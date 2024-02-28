@@ -29,6 +29,6 @@ public class Photo {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "contenido")
+    @Column(name = "contenido", columnDefinition = "LONGBLOB")
     private byte[] content;
 }

@@ -38,8 +38,6 @@ public class AuthorController {
         List<Author> authors = authorService.findByActive();
         model.addAttribute("authors", authors);
 
-        System.out.println("Id autor: " + idAuthor);
-
         if (idAuthor != null) {
             List<Book> books = bookService.findByAuthor(idAuthor);
             model.addAttribute("books", books);
@@ -61,22 +59,22 @@ public class AuthorController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/register")
-    public String registerAuthor(ModelMap modelo, @ModelAttribute(name = "author") @Valid AuthorDto authorDto, BindingResult result) {
+    public String registerAuthor(ModelMap model, @ModelAttribute(name = "author") @Valid AuthorDto authorDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            modelo.addAttribute("author", authorDto);
+            model.addAttribute("author", authorDto);
             return "registro-autor.html";
         }
 
         authorService.register(authorDto);
 
-        modelo.put("titulo", "Registro exitoso!");
-        modelo.put("descripcion", "El autor ingresado fue registrado correctamente.");
+        model.put("titulo", "Registro exitoso!");
+        model.put("descripcion", "El autor ingresado fue registrado correctamente.");
 
         return "exito.html";
     }
 
-    //    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/update")
     public String updateAuthor(ModelMap model, @RequestParam String id) {
 
@@ -93,8 +91,6 @@ public class AuthorController {
                             .build())
                     .build();
 
-            System.out.println(authorDto);
-
             model.addAttribute("author", authorDto);
 
             return "modificar-autor.html";
@@ -103,23 +99,23 @@ public class AuthorController {
         return "redirect:/author";
     }
 
-    //    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/update")
-    public String updateAuthor(ModelMap modelo, @ModelAttribute(name = "author") @Valid AuthorDto authorDto, BindingResult result) {
+    public String updateAuthor(ModelMap model, @ModelAttribute(name = "author") @Valid AuthorDto authorDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            modelo.addAttribute("author", authorDto);
+            model.addAttribute("author", authorDto);
             return "modificar-autor.html";
         }
 
-         authorService.update(authorDto.getId(), authorDto);
+        authorService.update(authorDto.getId(), authorDto);
         return "redirect:/author";
 
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/low")
-    public String low(ModelMap modelo, @RequestParam String id) {
+    public String low(ModelMap model, @RequestParam String id) {
 
         authorService.low(id);
         return "redirect:/author";
@@ -128,7 +124,7 @@ public class AuthorController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/high")
-    public String high(ModelMap modelo, @RequestParam String id) {
+    public String high(ModelMap model, @RequestParam String id) {
 
         authorService.high(id);
         return "redirect:/author";
@@ -137,7 +133,7 @@ public class AuthorController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/delete")
-    public String delete(ModelMap modelo, @RequestParam String id) {
+    public String delete(ModelMap model, @RequestParam String id) {
 
         authorService.delete(id);
         return "redirect:/author";

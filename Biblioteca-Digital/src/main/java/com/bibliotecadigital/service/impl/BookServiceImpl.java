@@ -43,7 +43,7 @@ public class BookServiceImpl implements IBookService {
 
         Author author = authorService.findById(bookDto.getAuthor().getId());
 
-        Optional<Publisher> publisher = publisherService.findById(bookDto.getPublisher().getId());
+        Publisher publisher = publisherService.findById(bookDto.getPublisher().getId());
 
         Photo photo = photoService.register(bookDto.getPhotoDto());
 
@@ -59,7 +59,7 @@ public class BookServiceImpl implements IBookService {
                 .amountCopiesRemaining(bookDto.getAmountCopiesRemaining())
                 .register(LocalDateTime.now())
                 .author(((author != null) ? author : null))
-                .publisher(((publisher.isPresent()) ? publisher.get() : null))
+                .publisher(((publisher != null) ? publisher : null))
                 .photo(photo)
                 .build()
         );
@@ -83,7 +83,7 @@ public class BookServiceImpl implements IBookService {
 
             Author author = authorService.findById(bookDto.getAuthor().getId());
 
-            Optional<Publisher> publisher = publisherService.findById(bookDto.getPublisher().getId());
+            Publisher publisher = publisherService.findById(bookDto.getPublisher().getId());
 
             book.setIsbn(bookDto.getIsbn());
             book.setTitle(bookDto.getTitle());
@@ -95,7 +95,7 @@ public class BookServiceImpl implements IBookService {
             //validar que no sean menos los totales q los prestados
             book.setAmountCopiesRemaining(bookDto.getAmountCopies() - bookDto.getAmountCopiesBorrowed());
             book.setAuthor(((author != null) ? author : null));
-            book.setPublisher(((publisher.isPresent()) ? publisher.get() : null));
+            book.setPublisher(((publisher != null) ? publisher : null));
 
             Long idPhoto = null;
 

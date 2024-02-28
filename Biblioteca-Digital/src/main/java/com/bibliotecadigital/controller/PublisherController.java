@@ -1,7 +1,10 @@
 package com.bibliotecadigital.controller;
 
+import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.dto.PublisherDto;
+import com.bibliotecadigital.entity.Book;
 import com.bibliotecadigital.entity.Publisher;
+import com.bibliotecadigital.service.IBookService;
 import com.bibliotecadigital.service.IPublisherService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,86 +13,128 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author Lucas Aramberry
  */
-@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 @Controller
-@RequestMapping("/editoriales")
+@RequestMapping("/publisher")
 public class PublisherController {
 
     @Autowired
     private IPublisherService publisherService;
+    @Autowired
+    private IBookService bookService;
+
+    @GetMapping
+    public String publishers(ModelMap model, @RequestParam(required = false) String idPublisher) {
+
+        List<Publisher> listActive = publisherService.findByActive();
+        model.addAttribute("publisherActive", listActive);
+
+        List<Publisher> publishers = publisherService.findAll();
+        model.addAttribute("publishers", publishers);
+
+        if (idPublisher != null) {
+            List<Book> books = bookService.findByPublisher(idPublisher);
+            model.addAttribute("books", books);
+
+            model.addAttribute("editoriales", publisherService.findById(idPublisher));
+        }
+
+        return "editoriales.html";
+    }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/registro")
-    public String registroPublisher(ModelMap modelo) {
-        modelo.addAttribute("publisher", PublisherDto.builder().build());
+    @GetMapping("/register")
+    public String registerPublisher(ModelMap model) {
+        model.addAttribute("publisher", PublisherDto.builder().build());
         return "registro-editorial.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/register")
-    public String registerPublisher(ModelMap modelo, @ModelAttribute(name = "publisher") @Valid PublisherDto publisherDto, BindingResult result) {
+    public String registerPublisher(ModelMap model, @ModelAttribute(name = "publisher") @Valid PublisherDto publisherDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            modelo.addAttribute("publisher", publisherDto);
+            model.addAttribute("publisher", publisherDto);
             return "registro-editorial.html";
         }
 
         publisherService.register(publisherDto);
 
-        modelo.put("titulo", "Registro exitoso!");
-        modelo.put("descripcion", "La editorial ingresado fue registrado correctamente.");
+        model.put("titulo", "Registro exitoso!");
+        model.put("descripcion", "La editorial ingresado fue registrado correctamente.");
+
         return "exito.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/modificar")
-    public String modificarPublisher(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/update")
+    public String updatePublisher(ModelMap model, @RequestParam String id) {
 
-        Optional<Publisher> editorial = publisherService.findById(id);
-        modelo.addAttribute("editorial", editorial.get());
+        Publisher publisher = publisherService.findById(id);
 
-        return "modificar-editorial.html";
-    }
+        if (publisher != null) {
+            PublisherDto publisherDto = PublisherDto
+                    .builder()
+                    .id(publisher.getId())
+                    .name(publisher.getName())
+                    .photoDto(PhotoDto
+                            .builder()
+                            .file((MultipartFile) publisher.getPhoto())
+                            .build())
+                    .build();
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/actualizar")
-    public String modificarPublisher(ModelMap modelo, @RequestParam String id, @ModelAttribute(name = "publisher") @Valid PublisherDto publisherDto, BindingResult result) {
+            model.addAttribute("publisher", publisherDto);
 
-        if (result.hasErrors()) {
-            modelo.addAttribute("editorial", publisherDto);
             return "modificar-editorial.html";
         }
 
-        Optional<Publisher> editorial = editorial = publisherService.findById(id);
-        publisherService.update(id, publisherDto);
-        return "redirect:/editoriales";
+        return "redirect:/publisher";
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/update")
+    public String updatePublisher(ModelMap model, @ModelAttribute(name = "publisher") @Valid PublisherDto publisherDto, BindingResult result) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("publisher", publisherDto);
+            return "modificar-editorial.html";
+        }
+
+        publisherService.update(publisherDto.getId(), publisherDto);
+        return "redirect:/publisher";
 
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/baja")
-    public String baja(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/low")
+    public String low(ModelMap model, @RequestParam String id) {
+
         publisherService.low(id);
-        return "redirect:/editoriales";
+        return "redirect:/publisher";
+
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/alta")
-    public String alta(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/high")
+    public String high(ModelMap model, @RequestParam String id) {
+
         publisherService.high(id);
-        return "redirect:/editoriales";
+        return "redirect:/publisher";
+
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/eliminar")
-    public String eliminar(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/delete")
+    public String delete(ModelMap model, @RequestParam String id) {
+
         publisherService.delete(id);
-        return "redirect:/editoriales";
+        return "redirect:/publisher";
+
     }
 }

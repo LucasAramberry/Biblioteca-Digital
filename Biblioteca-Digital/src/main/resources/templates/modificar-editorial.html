@@ -8,7 +8,7 @@
 <body>
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
-<a href="/editoriales">
+<a href="/publisher">
     <i class="fas fa-arrow-left"></i>
 </a>
 
@@ -18,29 +18,30 @@
     <div class="w-75 direction align-items-center text-light">
         <div>
             <div class="img-mod">
-                <img th:if="${editorial.foto != null}" class="rounded mx-auto d-block"
-                     th:src="${'/foto/editorial/' + editorial.id}" width="180px" height="190px" alt="Imagen Editorial"/>
+                <img th:if="${publisher.photoDto != null}" class="rounded mx-auto d-block"
+                     th:src="${'/photo/publisher/' + publisher.id}" width="180px" height="190px"
+                     alt="Imagen Editorial"/>
             </div>
         </div>
         <div class="mb-3">
-            <form th:action="@{/editoriales/actualizar}" method="POST" enctype="multipart/form-data">
+            <form th:action="@{/publisher/update}" method="POST" enctype="multipart/form-data" th:object="${publisher}">
 
                 <p th:if="${error != null}" th:text="${error}" class="error"></p>
 
-                <input type="hidden" th:value="${editorial.id}" name="id">
+                <input type="hidden" th:field="*{id}" name="id">
 
                 <div class="mb-3">
-                    <label for="nombre" class="col col-form-label">Nombre</label>
+                    <label for="name" class="col col-form-label">Nombre</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="nombre" name="nombre"
-                               th:value="${editorial.nombre}"/>
+                        <input type="text" class="form-control" id="name" name="name" th:field="*{name}"/>
                     </div>
+                    <span th:errors="*{name}" class="text-danger" th:if="${#fields.hasErrors('name')}"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label for="archivo" class="col col-form-label">Foto</label>
+                    <label for="file" class="col col-form-label">Foto</label>
                     <div class="col-sm-10 w-100">
-                        <input type="file" class="form-control" id="archivo" name="archivo"/>
+                        <input type="file" class="form-control" id="file" name="file" th:field="*{photoDto.file}"/>
                     </div>
                 </div>
 

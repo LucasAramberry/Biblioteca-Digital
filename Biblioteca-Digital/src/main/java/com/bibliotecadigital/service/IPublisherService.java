@@ -26,7 +26,7 @@ public interface IPublisherService {
 
     List<Publisher> findAll();
 
-    Optional<Publisher> findById(String id);
+    Publisher findById(String id);
 
     void save(Publisher publisher);
 

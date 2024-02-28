@@ -1,10 +1,12 @@
 package com.bibliotecadigital.controller;
 
-import com.bibliotecadigital.dto.PublisherDto;
+import com.bibliotecadigital.dto.CityDto;
+import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.dto.UserDto;
 import com.bibliotecadigital.entity.City;
 import com.bibliotecadigital.entity.User;
 import com.bibliotecadigital.enums.Gender;
+import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.service.ICityService;
 import com.bibliotecadigital.service.IUserService;
 import jakarta.servlet.http.HttpSession;
@@ -24,9 +26,8 @@ import java.util.Optional;
 /**
  * @author Lucas Aramberry
  */
-@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 @Controller
-@RequestMapping("/usuario")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -34,36 +35,87 @@ public class UserController {
     @Autowired
     private ICityService cityService;
 
+    @GetMapping("/register")
+    public String register(ModelMap model) {
+        List<City> cities = cityService.findAll();
+        model.put("cities", cities);
+        model.put("genders", Gender.values());
+
+        model.addAttribute("user", UserDto.builder().build());
+
+        return "registro.html";
+    }
+
+    @PostMapping("/register")
+    public String register(ModelMap model, @ModelAttribute(name = "user") @Valid UserDto userDto, BindingResult result) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("user", userDto);
+            List<City> cities = cityService.findAll();
+            model.put("cities", cities);
+            model.put("genders", Gender.values());
+            return "registro.html";
+        }
+
+        userService.register(userDto);
+
+        model.put("titulo", "¡Bienvenido a la Biblioteca!");
+        model.put("descripcion", "Tu usuario fue registrado de manera satisfactoria.");
+
+        return "exito.html";
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    @GetMapping("/editar-perfil")
-    public String editarPerfil(HttpSession session, ModelMap modelo, @RequestParam String id) {
-
-        List<City> zonas = cityService.findAll();
-        modelo.put("zonas", zonas);
-
-        modelo.put("sexos", Gender.values());
+    @GetMapping("/edit-profile")
+    public String editProfile(HttpSession session, ModelMap model, @RequestParam String id) {
 
         User login = (User) session.getAttribute("usuariosession");
+
         if (login == null || !login.getId().equals(id)) {
             return "redirect:/";
         }
 
-        Optional<User> usuario = userService.findById(id);
-        modelo.addAttribute("usuario", usuario.get());
+        List<City> cities = cityService.findAll();
+        model.put("cities", cities);
+
+        model.put("genders", Gender.values());
+
+
+        model.addAttribute("user", UserDto
+                .builder()
+                .name(login.getName())
+                .lastName(login.getLastName())
+                .dni(login.getDni())
+                .gender(login.getGender())
+                .phone(login.getPhone())
+                .role(login.getRole())
+                .cityDto(CityDto
+                        .builder()
+                        .id(login.getCity().getId())
+                        .name(login.getCity().getName())
+                        .build())
+                .email(login.getEmail())
+                .password(login.getPassword())
+                .photoDto(PhotoDto
+                        .builder()
+                        .file((MultipartFile) login.getPhoto())
+                        .build()
+                )
+                .build());
 
         return "perfil.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    @PostMapping("/actualizar-perfil")
-    public String actualizarPerfil(ModelMap modelo, HttpSession session, @ModelAttribute(name = "user") @Valid UserDto userDto, BindingResult result) {
+    @PostMapping("/update-profile")
+    public String updateProfile(ModelMap model, HttpSession session, @ModelAttribute(name = "user") @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            modelo.addAttribute("user", userDto);
-            List<City> zonas = cityService.findAll();
+            model.addAttribute("user", userDto);
+            List<City> cities = cityService.findAll();
 
-            modelo.put("zonas", zonas);
-            modelo.put("sexos", Gender.values());
+            model.put("cities", cities);
+            model.put("genders", Gender.values());
 
             return "perfil.html";
         }
@@ -73,37 +125,60 @@ public class UserController {
             return "redirect:/";
         }
 
-        Optional<User> usuario = userService.findById(login.getId());
         userService.update(login.getId(), userDto);
-        session.setAttribute("usuariosession", usuario.get());
+
+        session.setAttribute("usuariosession", userService.findById(login.getId()));
+
         return "redirect:/inicio";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/cambiar-rol")
-    public String cambiarRol(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/change-role")
+    public String changeRole(ModelMap model, @RequestParam String id) {
         userService.changeRol(id);
-        return "redirect:/usuarios";
+        return "redirect:/user";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping("/baja")
-    public String baja(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/low")
+    public String low(ModelMap model, @RequestParam String id) {
         userService.low(id);
-        return "redirect:/usuarios";
+        return "redirect:/user";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/alta")
-    public String alta(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/high")
+    public String high(ModelMap model, @RequestParam String id) {
         userService.high(id);
-        return "redirect:/usuarios";
+        return "redirect:/user";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/eliminar")
-    public String eliminar(ModelMap modelo, @RequestParam String id) {
+    @GetMapping("/delete")
+    public String delete(ModelMap model, @RequestParam String id) {
         userService.delete(id);
-        return "redirect:/usuarios";
+        return "redirect:/user";
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/users")
+    public String users(ModelMap model, @RequestParam(required = false) String idUser) {
+        model.put("rolAdmin", Role.ADMIN);
+        model.put("rolUser", Role.USER);
+
+        List<User> listUsers = userService.findAll();
+        model.addAttribute("userList", listUsers);
+
+        List<User> users = userService.findAll();
+        model.addAttribute("users", users);
+
+        model.addAttribute("userSelected", null);
+
+        if (idUser != null) {
+            Optional<User> user = userService.findById(idUser);
+            model.put("users", user.get());
+            model.addAttribute("userSelected", user);
+        }
+        return "usuarios.html";
     }
 }

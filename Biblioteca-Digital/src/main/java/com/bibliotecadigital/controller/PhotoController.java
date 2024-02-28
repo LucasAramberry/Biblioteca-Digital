@@ -38,8 +38,8 @@ public class PhotoController {
     @Autowired
     private IPublisherService publisherService;
 
-    @PreAuthorize("hasAnyRole('ROLE_USUARIO', 'ROLE_ADMIN')")
-    @GetMapping("/usuario/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    @GetMapping("/user/{id}")
     public ResponseEntity<byte[]> photoUser(@PathVariable String id) {
         try {
             Optional<User> usuario = userService.findById(id);
@@ -48,18 +48,18 @@ public class PhotoController {
                     throw new ErrorException("El usuario no tiene una foto asignada.");
                 }
             }
-            byte[] foto = usuario.get().getPhoto().getContent();
+            byte[] photo = usuario.get().getPhoto().getContent();
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
 
-            return new ResponseEntity<>(foto, headers, HttpStatus.OK);
+            return new ResponseEntity<>(photo, headers, HttpStatus.OK);
         } catch (ErrorException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/libro/{id}")
+    @GetMapping("/book/{id}")
     public ResponseEntity<byte[]> photoBook(@PathVariable String id) {
         try {
             Optional<Book> libro = bookService.findById(id);
@@ -68,12 +68,12 @@ public class PhotoController {
                     throw new ErrorException("El libro no tiene una foto asignada.");
                 }
             }
-            byte[] foto = libro.get().getPhoto().getContent();
+            byte[] photo = libro.get().getPhoto().getContent();
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
 
-            return new ResponseEntity<>(foto, headers, HttpStatus.OK);
+            return new ResponseEntity<>(photo, headers, HttpStatus.OK);
         } catch (ErrorException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -88,32 +88,32 @@ public class PhotoController {
                     throw new ErrorException("El autor no tiene una foto asignada.");
                 }
             }
-            byte[] foto = author.getPhoto().getContent();
+            byte[] photo = author.getPhoto().getContent();
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
 
-            return new ResponseEntity<>(foto, headers, HttpStatus.OK);
+            return new ResponseEntity<>(photo, headers, HttpStatus.OK);
         } catch (ErrorException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/editorial/{id}")
-    public ResponseEntity<byte[]> fotoEditorial(@PathVariable String id) {
+    @GetMapping("/publisher/{id}")
+    public ResponseEntity<byte[]> photoPublisher(@PathVariable String id) {
         try {
-            Optional<Publisher> editorial = publisherService.findById(id);
-            if (editorial.isPresent()) {
-                if (editorial.get().getPhoto() == null) {
+            Publisher publisher = publisherService.findById(id);
+            if (publisher != null) {
+                if (publisher.getPhoto() == null) {
                     throw new ErrorException("El editorial no tiene una foto asignada.");
                 }
             }
-            byte[] foto = editorial.get().getPhoto().getContent();
+            byte[] photo = publisher.getPhoto().getContent();
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
 
-            return new ResponseEntity<>(foto, headers, HttpStatus.OK);
+            return new ResponseEntity<>(photo, headers, HttpStatus.OK);
         } catch (ErrorException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
