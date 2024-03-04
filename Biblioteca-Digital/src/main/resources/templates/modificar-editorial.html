@@ -6,6 +6,7 @@
 </head>
 
 <body>
+
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
 <a href="/publisher">
@@ -15,15 +16,19 @@
 <h1 class="mb-3">Modificar editorial</h1>
 
 <div class="d-flex justify-content-center">
+
     <div class="w-75 direction align-items-center text-light">
+
         <div>
             <div class="img-mod">
                 <img th:if="${publisher.photoDto != null}" class="rounded mx-auto d-block"
                      th:src="${'/photo/publisher/' + publisher.id}" width="180px" height="190px"
-                     alt="Imagen Editorial"/>
+                     alt="Imagén Editorial"/>
             </div>
         </div>
+
         <div class="mb-3">
+
             <form th:action="@{/publisher/update}" method="POST" enctype="multipart/form-data" th:object="${publisher}">
 
                 <p th:if="${error != null}" th:text="${error}" class="error"></p>

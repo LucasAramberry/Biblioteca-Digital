@@ -1,11 +1,11 @@
 package com.bibliotecadigital.service.impl;
 
-import com.bibliotecadigital.repository.UserRepository;
+import com.bibliotecadigital.entities.User;
+import com.bibliotecadigital.repositories.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -25,20 +25,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        com.bibliotecadigital.entity.User usuario = userRepository.findByEmail(username);
-        if (usuario != null) {
+        User user = userRepository.findByEmail(username);
+//                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not exist."));
 
-            List<GrantedAuthority> permisos = new ArrayList<>();
+        if (user != null) {
 
-            GrantedAuthority p1 = new SimpleGrantedAuthority("ROLE_" + usuario.getRole());
-            permisos.add(p1);
+            Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_".concat(user.getRole().name())));
 
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             HttpSession session = attr.getRequest().getSession(true);
-            session.setAttribute("usersession", usuario);
+            session.setAttribute("usersession", user);
 
-            User user = new User(usuario.getEmail(), usuario.getPassword(), permisos);
-            return user;
+            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), true, true, true, true, authorities);
         } else {
             return null;
         }

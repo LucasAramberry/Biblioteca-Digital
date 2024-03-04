@@ -1,8 +1,7 @@
 package com.bibliotecadigital.dto;
 
-import com.bibliotecadigital.entity.Author;
-import com.bibliotecadigital.entity.Photo;
-import com.bibliotecadigital.entity.Publisher;
+import com.bibliotecadigital.entities.Author;
+import com.bibliotecadigital.entities.Publisher;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

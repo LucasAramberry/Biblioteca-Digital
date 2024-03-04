@@ -1,8 +1,8 @@
 package com.bibliotecadigital.persistence.impl;
 
-import com.bibliotecadigital.entity.Loan;
+import com.bibliotecadigital.entities.Loan;
 import com.bibliotecadigital.persistence.ILoanDAO;
-import com.bibliotecadigital.repository.LoanRepository;
+import com.bibliotecadigital.repositories.LoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

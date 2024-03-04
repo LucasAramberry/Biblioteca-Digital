@@ -1,8 +1,8 @@
 package com.bibliotecadigital.persistence.impl;
 
-import com.bibliotecadigital.entity.Publisher;
+import com.bibliotecadigital.entities.Publisher;
 import com.bibliotecadigital.persistence.IPublisherDAO;
-import com.bibliotecadigital.repository.PublisherRepository;
+import com.bibliotecadigital.repositories.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

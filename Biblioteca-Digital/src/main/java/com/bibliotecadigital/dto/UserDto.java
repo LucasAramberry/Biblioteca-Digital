@@ -1,7 +1,6 @@
 package com.bibliotecadigital.dto;
 
-import com.bibliotecadigital.entity.City;
-import com.bibliotecadigital.entity.Photo;
+import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.enums.Gender;
 import com.bibliotecadigital.enums.Role;
 import jakarta.validation.constraints.Email;
@@ -38,7 +37,8 @@ public class UserDto {
 
     private Role role;
 
-    private CityDto cityDto;
+//    private CityDto cityDto;
+    private Long idCity;
 
     private PhotoDto photoDto;
 
@@ -48,5 +48,7 @@ public class UserDto {
     @NotBlank(message = "Clave invalida. Debe contener al menos 6 digitos.")
     @Size(min = 6, max = 16, message = "Clave invalida. Debe contener al menos 6 digitos.")
     private String password;
+
+    private String matchingPassword;
 
 }

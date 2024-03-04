@@ -1,7 +1,7 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.LoanDto;
-import com.bibliotecadigital.entity.Loan;
+import com.bibliotecadigital.entities.Loan;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.ILoanDAO;
 import com.bibliotecadigital.service.IBookService;

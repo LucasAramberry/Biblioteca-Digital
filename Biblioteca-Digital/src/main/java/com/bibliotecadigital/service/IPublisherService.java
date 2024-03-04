@@ -1,10 +1,9 @@
 package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.dto.PublisherDto;
-import com.bibliotecadigital.entity.Publisher;
+import com.bibliotecadigital.entities.Publisher;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IPublisherService {
 

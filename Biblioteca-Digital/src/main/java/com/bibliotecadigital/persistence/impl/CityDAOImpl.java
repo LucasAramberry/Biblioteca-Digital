@@ -1,8 +1,8 @@
 package com.bibliotecadigital.persistence.impl;
 
-import com.bibliotecadigital.entity.City;
+import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.persistence.ICityDAO;
-import com.bibliotecadigital.repository.CityRepository;
+import com.bibliotecadigital.repositories.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

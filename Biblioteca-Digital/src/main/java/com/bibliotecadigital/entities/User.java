@@ -1,4 +1,4 @@
-package com.bibliotecadigital.entity;
+package com.bibliotecadigital.entities;
 
 import com.bibliotecadigital.enums.Gender;
 import com.bibliotecadigital.enums.Role;
@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  *

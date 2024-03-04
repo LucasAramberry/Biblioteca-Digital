@@ -1,7 +1,7 @@
-package com.bibliotecadigital.controller;
+package com.bibliotecadigital.controllers;
 
 import com.bibliotecadigital.dto.LoanDto;
-import com.bibliotecadigital.entity.*;
+import com.bibliotecadigital.entities.*;
 import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.service.IBookService;

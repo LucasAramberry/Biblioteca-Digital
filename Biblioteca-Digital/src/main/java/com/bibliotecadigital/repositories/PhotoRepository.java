@@ -1,6 +1,6 @@
-package com.bibliotecadigital.repository;
+package com.bibliotecadigital.repositories;
 
-import com.bibliotecadigital.entity.Photo;
+import com.bibliotecadigital.entities.Photo;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

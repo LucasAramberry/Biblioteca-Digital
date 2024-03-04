@@ -1,4 +1,4 @@
-package com.bibliotecadigital.entity;
+package com.bibliotecadigital.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -14,19 +15,26 @@ import java.time.LocalDateTime;
  * @author Lucas Aramberry
  */
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
-@Table(name = "autores")
-public class Author {
+@Table(name = "prestamos")
+public class Loan {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "nombre", unique = true)
-    private String name;
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "fecha_prestasmo", columnDefinition = "DATE")
+    private LocalDate dateLoan;
+
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "fecha_devolucion", columnDefinition = "DATE")
+    private LocalDate dateReturn;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -38,11 +46,9 @@ public class Author {
     @Column(name = "baja", columnDefinition = "DATETIME")
     private LocalDateTime unsubscribe;
 
-    @OneToOne(targetEntity = Photo.class, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id_foto")
-    private Photo photo;
+    @OneToOne
+    private Book book;
 
-//    @Column(name = "editorial")
-//    @ManyToOne(targetEntity = Book.class, cascade = CascadeType.REMOVE)
-//    private Book book;
+    @OneToOne
+    private User user;
 }

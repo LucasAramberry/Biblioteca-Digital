@@ -1,8 +1,8 @@
 package com.bibliotecadigital.persistence.impl;
 
-import com.bibliotecadigital.entity.Book;
+import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.persistence.IBookDAO;
-import com.bibliotecadigital.repository.BookRepository;
+import com.bibliotecadigital.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

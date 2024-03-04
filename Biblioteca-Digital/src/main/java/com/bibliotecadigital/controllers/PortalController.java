@@ -1,4 +1,4 @@
-package com.bibliotecadigital.controller;
+package com.bibliotecadigital.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

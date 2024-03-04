@@ -1,7 +1,6 @@
 package com.bibliotecadigital.persistence;
 
-import com.bibliotecadigital.entity.Book;
-import com.bibliotecadigital.entity.City;
+import com.bibliotecadigital.entities.City;
 
 import java.util.List;
 import java.util.Optional;

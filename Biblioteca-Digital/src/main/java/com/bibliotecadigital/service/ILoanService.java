@@ -1,7 +1,7 @@
 package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.dto.LoanDto;
-import com.bibliotecadigital.entity.Loan;
+import com.bibliotecadigital.entities.Loan;
 import com.bibliotecadigital.error.ErrorException;
 import org.springframework.data.repository.query.Param;
 

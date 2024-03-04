@@ -1,8 +1,7 @@
 package com.bibliotecadigital.service;
 
-import com.bibliotecadigital.dto.AuthorDto;
 import com.bibliotecadigital.dto.BookDto;
-import com.bibliotecadigital.entity.Book;
+import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.bibliotecadigital.service;
 
-import com.bibliotecadigital.entity.City;
+import com.bibliotecadigital.entities.City;
 
 import java.util.List;
 import java.util.Optional;

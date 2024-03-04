@@ -1,6 +1,6 @@
-package com.bibliotecadigital.repository;
+package com.bibliotecadigital.repositories;
 
-import com.bibliotecadigital.entity.Book;
+import com.bibliotecadigital.entities.Book;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

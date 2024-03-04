@@ -1,9 +1,9 @@
-package com.bibliotecadigital.controller;
+package com.bibliotecadigital.controllers;
 
-import com.bibliotecadigital.entity.Author;
-import com.bibliotecadigital.entity.Book;
-import com.bibliotecadigital.entity.Publisher;
-import com.bibliotecadigital.entity.User;
+import com.bibliotecadigital.entities.Author;
+import com.bibliotecadigital.entities.Book;
+import com.bibliotecadigital.entities.Publisher;
+import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IBookService;

@@ -1,7 +1,7 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.PhotoDto;
-import com.bibliotecadigital.entity.Photo;
+import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.persistence.IPhotoDAO;
 import com.bibliotecadigital.service.IPhotoService;
 import lombok.extern.slf4j.Slf4j;

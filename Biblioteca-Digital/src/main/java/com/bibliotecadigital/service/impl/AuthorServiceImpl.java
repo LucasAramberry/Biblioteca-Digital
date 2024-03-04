@@ -1,8 +1,8 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.AuthorDto;
-import com.bibliotecadigital.entity.Author;
-import com.bibliotecadigital.entity.Photo;
+import com.bibliotecadigital.entities.Author;
+import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.persistence.IAuthorDAO;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IPhotoService;

@@ -1,7 +1,6 @@
 package com.bibliotecadigital.persistence;
 
-import com.bibliotecadigital.entity.Loan;
-import com.bibliotecadigital.entity.Photo;
+import com.bibliotecadigital.entities.Photo;
 
 import java.util.List;
 import java.util.Optional;

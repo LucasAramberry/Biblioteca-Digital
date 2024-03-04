@@ -1,4 +1,4 @@
-package com.bibliotecadigital.entity;
+package com.bibliotecadigital.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,13 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ *
+ * @author Lucas Aramberry
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "ciudades")
-public class City {
+@Table(name = "fotos")
+public class Photo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +25,10 @@ public class City {
     @Column(name = "nombre")
     private String name;
 
+    private String mime;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "contenido", columnDefinition = "LONGBLOB")
+    private byte[] content;
 }

@@ -9,27 +9,27 @@
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
 <section class="text-center text-light centrar">
-    <h1 class="titulo font-monospace t-stroke t-shadow-halftone glitch" data-text="¡Bienvenido a la Libreria!">
-        ¡Bienvenido a Biblioteca Digital!</h1>
+    <h1 th:if="${session.usersession == null}" class="titulo font-monospace t-stroke t-shadow-halftone glitch" >
+        ¡Bienvenidos a Biblioteca Digital!</h1>
 
-    <h1 class="nombreUsuario" th:if="${session.usuariosession != null}"
-        th:text="${session.usuariosession.nombre + ' ' + session.usuariosession.apellido}"></h1>
+    <h1 th:if="${session.usersession != null}" class="titulo font-monospace t-stroke t-shadow-halftone glitch"
+        th:text="${'¡Hola ' + session.usersession.name + ' ' + session.usersession.lastName + '!'}"></h1>
 
     <h2 class="enlacesSub">
-        <a class="enlaces-sub" href="/libros">Libros</a>
+        <a class="enlaces-sub" href="/book">Libros</a>
         |
-        <a class="enlaces-sub" href="/autores">Autores</a>
+        <a class="enlaces-sub" href="/author">Autores</a>
         |
-        <a class="enlaces-sub" href="/editoriales">Editoriales</a>
+        <a class="enlaces-sub" href="/publisher">Editoriales</a>
     </h2>
 
-    <div>
-        <a sec:authorize="hasRole('USUARIO')" th:if="${session.usuariosession != null}" class="enlaces-sub"
-           th:href="@{/prestamos/mis-prestamos}">
+    <div class="mt-5">
+        <a sec:authorize="hasRole('USER')" th:if="${session.usersession != null}" class="enlaces-sub"
+           th:href="@{/loan/my-loans}">
             <button type="button" class="btn btn-dark btn">Mis prestamos</button>
         </a>
-        <a th:if="${session.usuariosession != null}" class="enlaces-sub"
-           th:href="@{/usuario/editar-perfil(id=__${session.usuariosession.id}__)}">
+        <a th:if="${session.usersession != null}" class="enlaces-sub"
+           th:href="@{'/user/edit-profile/' + ${session.usersession.id}}">
             <button type="button" class="btn btn-dark btn">Configurar Perfil</button>
         </a>
     </div>

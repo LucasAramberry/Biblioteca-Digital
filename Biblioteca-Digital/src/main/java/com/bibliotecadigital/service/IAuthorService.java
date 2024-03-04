@@ -1,10 +1,9 @@
 package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.dto.AuthorDto;
-import com.bibliotecadigital.entity.Author;
+import com.bibliotecadigital.entities.Author;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IAuthorService {
 

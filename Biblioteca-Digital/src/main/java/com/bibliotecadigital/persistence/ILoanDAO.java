@@ -1,8 +1,6 @@
 package com.bibliotecadigital.persistence;
 
-import com.bibliotecadigital.entity.City;
-import com.bibliotecadigital.entity.Loan;
-import org.springframework.data.jpa.repository.Query;
+import com.bibliotecadigital.entities.Loan;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;

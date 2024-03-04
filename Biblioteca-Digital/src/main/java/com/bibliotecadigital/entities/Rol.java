@@ -1,5 +1,6 @@
-package com.bibliotecadigital.entity;
+package com.bibliotecadigital.entities;
 
+import com.bibliotecadigital.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,28 +8,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
  * @author Lucas Aramberry
  */
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
-@Table(name = "fotos")
-public class Photo {
+@Table(name = "roles")
+public class Rol {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre")
-    private String name;
-
-    private String mime;
-
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "contenido", columnDefinition = "LONGBLOB")
-    private byte[] content;
+    @Enumerated(EnumType.STRING)
+    private Role name;
 }

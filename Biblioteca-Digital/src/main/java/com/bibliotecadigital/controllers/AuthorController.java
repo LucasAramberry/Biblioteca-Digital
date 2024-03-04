@@ -1,9 +1,9 @@
-package com.bibliotecadigital.controller;
+package com.bibliotecadigital.controllers;
 
 import com.bibliotecadigital.dto.AuthorDto;
 import com.bibliotecadigital.dto.PhotoDto;
-import com.bibliotecadigital.entity.Author;
-import com.bibliotecadigital.entity.Book;
+import com.bibliotecadigital.entities.Author;
+import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IBookService;
 import jakarta.validation.Valid;
@@ -32,23 +32,20 @@ public class AuthorController {
     @GetMapping
     public String authors(ModelMap model, @RequestParam(required = false) String idAuthor) {
 
-        List<Author> listActive = authorService.findByActive();
-        model.addAttribute("authorsActive", listActive);
+        List<Author> authorsActive = authorService.findByActive();
 
-        List<Author> authors = authorService.findByActive();
-        model.addAttribute("authors", authors);
+        model.addAttribute("authorsActive", authorsActive);
+        model.addAttribute("authors", authorsActive);
 
         if (idAuthor != null) {
-            List<Book> books = bookService.findByAuthor(idAuthor);
-            model.addAttribute("books", books);
-
+            model.addAttribute("books", bookService.findByAuthor(idAuthor));
             model.addAttribute("authors", authorService.findById(idAuthor));
         }
 
         return "autores.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/register")
     public String registerAuthor(ModelMap model) {
 
@@ -57,7 +54,7 @@ public class AuthorController {
         return "registro-autor.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/register")
     public String registerAuthor(ModelMap model, @ModelAttribute(name = "author") @Valid AuthorDto authorDto, BindingResult result) {
 
@@ -74,9 +71,9 @@ public class AuthorController {
         return "exito.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/update")
-    public String updateAuthor(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/update/{id}")
+    public String updateAuthor(ModelMap model, @PathVariable String id) {
 
         Author author = authorService.findById(id);
 
@@ -99,7 +96,7 @@ public class AuthorController {
         return "redirect:/author";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/update")
     public String updateAuthor(ModelMap model, @ModelAttribute(name = "author") @Valid AuthorDto authorDto, BindingResult result) {
 
@@ -113,27 +110,27 @@ public class AuthorController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/low")
-    public String low(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/low/{id}")
+    public String low(ModelMap model, @PathVariable String id) {
 
         authorService.low(id);
         return "redirect:/author";
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/high")
-    public String high(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/high/{id}")
+    public String high(ModelMap model, @PathVariable String id) {
 
         authorService.high(id);
         return "redirect:/author";
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/delete")
-    public String delete(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/delete/{id}")
+    public String delete(ModelMap model, @PathVariable String id) {
 
         authorService.delete(id);
         return "redirect:/author";

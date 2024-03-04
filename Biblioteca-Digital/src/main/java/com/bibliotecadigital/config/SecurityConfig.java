@@ -39,7 +39,7 @@ public class SecurityConfig {
                 })
                 .formLogin(form -> {
                     form.loginPage("/login");
-                    form.loginProcessingUrl("/logincheck");
+                    form.loginProcessingUrl("/login");
                     form.usernameParameter("username"); // Como viajan los datos del logueo
                     form.passwordParameter("password"); // Como viajan los datos del logueo
                     form.successHandler(successHandler()); //URL hacia donde se redirije despues de iniciar sesion

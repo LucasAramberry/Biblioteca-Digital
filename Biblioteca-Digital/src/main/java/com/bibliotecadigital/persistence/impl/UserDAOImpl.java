@@ -1,8 +1,8 @@
 package com.bibliotecadigital.persistence.impl;
 
-import com.bibliotecadigital.entity.User;
+import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.persistence.IUserDAO;
-import com.bibliotecadigital.repository.UserRepository;
+import com.bibliotecadigital.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

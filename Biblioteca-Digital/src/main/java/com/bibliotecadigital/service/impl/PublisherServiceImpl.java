@@ -1,8 +1,8 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.PublisherDto;
-import com.bibliotecadigital.entity.Photo;
-import com.bibliotecadigital.entity.Publisher;
+import com.bibliotecadigital.entities.Photo;
+import com.bibliotecadigital.entities.Publisher;
 import com.bibliotecadigital.persistence.IPublisherDAO;
 import com.bibliotecadigital.service.IPhotoService;
 import com.bibliotecadigital.service.IPublisherService;
@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Lucas Aramberry

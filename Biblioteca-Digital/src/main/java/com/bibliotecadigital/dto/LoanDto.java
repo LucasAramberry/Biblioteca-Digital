@@ -1,8 +1,7 @@
 package com.bibliotecadigital.dto;
 
-import com.bibliotecadigital.entity.Book;
-import com.bibliotecadigital.entity.User;
-import jakarta.validation.constraints.Future;
+import com.bibliotecadigital.entities.Book;
+import com.bibliotecadigital.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

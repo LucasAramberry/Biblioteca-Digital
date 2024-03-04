@@ -7,7 +7,7 @@
 <body>
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
-<!--FILTRAR-->
+<!-- Created by Lucas Aramberry -->
 <div class="filtrar bg-dark text-white">
 
     <div><h5>Buscar libro por Editorial</h5></div>
@@ -16,7 +16,7 @@
             <select class="filtrar-select" name="idPublisher">
                 <option selected disabled>Seleccionar</option>
                 <option>Todos</option>
-                <option th:each="publisher : ${publisherActive}" th:value="${editorial.id}"
+                <option th:each="publisher : ${publisherActive}" th:value="${publisher.id}"
                         th:text="${publisher.name}"></option>
             </select>
 
@@ -31,61 +31,56 @@
     <a href="/publisher/register" class="btn btn-dark" tabindex="-1" role="button">Agregar editorial</a>
 </div>
 
-<!--CARDS editoriales-->
+<!-- Created by Lucas Aramberry -->
 <div class="contenedor">
 
     <div class="contenedorHijo" th:each="publisher : ${publishers}">
 
-        <div class="card mb-3 bg-dark text-white">
+        <div class="card">
 
-            <div class="row g-0">
+            <div class="col-md-4 imagen-card">
+                <img th:src="@{'/photo/publisher/' + ${publisher.id}}" class="rounded-start"
+                     alt="Editorial">
+            </div>
 
-                <div class="col-md-4 imagen-card">
-                    <img th:src="@{'/photo/publisher/' + ${publisher.id}}" class="img-fluid rounded-start"
-                         alt="Editorial">
-                </div>
+            <div class="col-md-8 card-body">
 
-                <div class="col-md-8">
+                <h5 class="card-title" th:text="${publisher.name}"></h5><br>
 
-                    <div class="card-body">
+                <ul sec:authorize="hasRole('ADMIN')">
+                    <li th:text="'ALTA: ' + ${publisher.register}"></li>
+                    <li th:text="'BAJA: ' + ${publisher.unsubscribe}"></li>
+                </ul>
 
-                        <h5 class="card-title" th:text="${publisher.name}"></h5><br>
+                <div sec:authorize="hasRole('ADMIN')" class="botones">
 
-                        <ul>
-                            <li sec:authorize="hasRole('ADMIN')" th:text="'ALTA: ' + ${publisher.register}"></li>
-                            <li sec:authorize="hasRole('ADMIN')" th:text="'BAJA: ' + ${publisher.unsubscribe}"></li>
-                        </ul>
+                    <a th:if="${publisher.unsubscribe != null}" th:href="@{'/publisher/high/' + ${publisher.id}}">
+                        <button type="button" class="btn btn-success btn-sm">Dar alta</button>
+                    </a>
 
-                        <div sec:authorize="hasRole('ADMIN')" class="form-group2 text-center">
+                    <a th:unless="${publisher.unsubscribe != null}" th:href="@{'/publisher/low/' + ${publisher.id}}">
+                        <button type="button" class="btn btn-danger btn-sm">Dar baja</button>
+                    </a>
 
-                            <a th:if="${publisher.unsubscribe != null}"
-                               th:href="@{/publisher/high(id=__${publisher.id}__)}">
-                                <button type="button" class="btn btn-success btn-sm">Dar alta</button>
-                            </a>
-                            <a th:unless="${publisher.unsubscribe != null}"
-                               th:href="@{/publisher/low(id=__${publisher.id}__)}">
-                                <button type="button" class="btn btn-danger btn-sm">Dar baja</button>
-                            </a>
-                            <a th:href="@{/publisher/update(id=__${publisher.id}__)}">
-                                <button type="button" class="btn btn-warning btn-sm">Modificar</button>
-                            </a>
-                            <a th:href="@{/publisher/delete(id=__${publisher.id}__)}">
-                                <button type="button" class="btn btn-danger btn-sm">Eliminar</button>
-                            </a>
-                            <!--<a sec:authorize="hasRole('ADMIN')" th:if="${editorial.baja != null}" th:href="@{/editoriales/alta(id=__${editorial.id}__)}" title="Alta"><i class="fa fa-arrow-up text-success"></i></a>-->
-                            <!--<a sec:authorize="hasRole('ADMIN')" th:unless="${editorial.baja != null}" th:href="@{/editoriales/baja(id=__${editorial.id}__)}" title="Baja"><i class="fa fa-ban text-danger"></i></a>-->
-                            <!--<a sec:authorize="hasRole('ADMIN')" th:href="@{/editoriales/modificar(id=__${editorial.id}__)}" title="Modificar"><i class="fas fa-feather-alt text-warning"></i></a>-->
-                            <!--<a sec:authorize="hasRole('ADMIN')" th:href="@{/editoriales/eliminar(id=__${editorial.id}__)}" title="Eliminar"><i class="fas fa-archive text-danger"></i></a>-->
-                        </div>
-                    </div>
+                    <a th:href="@{'/publisher/update/' + ${publisher.id}}">
+                        <button type="button" class="btn btn-warning btn-sm">Modificar</button>
+                    </a>
+
+                    <a th:href="@{'/publisher/delete/' + ${publisher.id}}">
+                        <button type="button" class="btn btn-danger btn-sm">Eliminar</button>
+                    </a>
+                    <!--<a sec:authorize="hasRole('ADMIN')" th:if="${editorial.baja != null}" th:href="@{/editoriales/alta(id=__${editorial.id}__)}" title="Alta"><i class="fa fa-arrow-up text-success"></i></a>-->
+                    <!--<a sec:authorize="hasRole('ADMIN')" th:unless="${editorial.baja != null}" th:href="@{/editoriales/baja(id=__${editorial.id}__)}" title="Baja"><i class="fa fa-ban text-danger"></i></a>-->
+                    <!--<a sec:authorize="hasRole('ADMIN')" th:href="@{/editoriales/modificar(id=__${editorial.id}__)}" title="Modificar"><i class="fas fa-feather-alt text-warning"></i></a>-->
+                    <!--<a sec:authorize="hasRole('ADMIN')" th:href="@{/editoriales/eliminar(id=__${editorial.id}__)}" title="Eliminar"><i class="fas fa-archive text-danger"></i></a>-->
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!--CARDS Libros-->
-<div class="contenedor">
+<!-- Created by Lucas Aramberry -->
+<div th:if="${books}" class="contenedor">
 
     <div class="contenedorHijo" th:each="book : ${books}">
 
@@ -100,7 +95,8 @@
                 <div class="col-md-8">
                     <div class="card-body">
 
-                        <h5 class="card-title" th:text="${book.title}"></h5><br>
+                        <h5 class="card-title" th:text="${book.title}"></h5>
+                        <br>
 
                         <ul>
                             <li th:text="'ISBN: ' + ${book.isbn}"></li>
@@ -111,20 +107,21 @@
 
                         <div class="form-group2 text-center">
 
-                            <a class="btn btn-warning" th:href="@{/book/view/__${book.id}__}" role="button">Ver
+                            <a class="btn btn-warning" th:href="@{'/books/view/' + ${book.id}}" role="button">Ver
                                 más</a>
 
                             <a sec:authorize="hasRole('ADMIN')" th:if="${book.unsubscribe != null}"
-                               th:href="@{/book/high(id=__${book.id}__)}" title="Alta"><i
-                                    class="fa fa-arrow-up text-success"></i></a>
+                               th:href="@{'/book/high/' + ${book.id}}" title="Alta">
+                                <i class="fa fa-arrow-up text-success"></i>
+                            </a>
 
                             <a sec:authorize="hasRole('ADMIN')" th:unless="${book.unsubscribe != null}"
-                               th:href="@{/book/low(id=__${book.id}__)}" title="Baja"><i
+                               th:href="@{'/book/low/' + ${book.id}}" title="Baja"><i
                                     class="fa fa-ban text-danger"></i></a>
 
-                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/book/update(id=__${book.id}__)}"
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{'/book/update/'+ ${book.id}}"
                                title="Modificar"><i class="fas fa-feather-alt text-warning"></i></a>
-                            <!--<a sec:authorize="hasRole('ADMIN')" th:href="@{/libros/eliminar(id=__${libro.id}__)}" title="Eliminar"><i class="fas fa-archive text-danger"></i></a>-->
+                            <!--<a sec:authorize="hasRole('ADMIN')" th:href="@{/libros/delete(id=__${book.id}__)}" title="Eliminar"><i class="fas fa-archive text-danger"></i></a>-->
                         </div>
                     </div>
                 </div>

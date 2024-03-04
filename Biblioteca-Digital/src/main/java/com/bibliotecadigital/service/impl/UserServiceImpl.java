@@ -1,9 +1,9 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.UserDto;
-import com.bibliotecadigital.entity.City;
-import com.bibliotecadigital.entity.Photo;
-import com.bibliotecadigital.entity.User;
+import com.bibliotecadigital.entities.City;
+import com.bibliotecadigital.entities.Photo;
+import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.persistence.IUserDAO;
 import com.bibliotecadigital.service.ICityService;
@@ -35,6 +35,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private EmailServiceImpl emailService;
 
+
     /**
      * Metodo para registrar user
      *
@@ -44,8 +45,13 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void register(UserDto userDto) {
 
-        Optional<City> city = cityService.findById(userDto.getCityDto().getId());
-        Photo photo = photoService.register(userDto.getPhotoDto());
+        Optional<City> city = cityService.findById(userDto.getIdCity());//.orElseThrow(() -> new Exception("City not exist"))
+
+        Photo photo = null;
+
+        if (!userDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.register(userDto.getPhotoDto());
+        }
 
         save(User
                 .builder()
@@ -86,7 +92,7 @@ public class UserServiceImpl implements IUserService {
             user.setPhone(userDto.getPhone());
             user.setGender(userDto.getGender());
 
-            Optional<City> city = cityService.findById(userDto.getCityDto().getId());
+            Optional<City> city = cityService.findById(userDto.getIdCity());
             user.setCity(((city.get() != null) ? city.get() : null));
 
             user.setEmail(userDto.getEmail());

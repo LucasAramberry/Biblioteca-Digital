@@ -1,6 +1,6 @@
 package com.bibliotecadigital.service.impl;
 
-import com.bibliotecadigital.entity.City;
+import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.persistence.ICityDAO;
 import com.bibliotecadigital.service.ICityService;
 import org.springframework.beans.factory.annotation.Autowired;

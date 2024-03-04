@@ -1,6 +1,6 @@
 package com.bibliotecadigital.persistence;
 
-import com.bibliotecadigital.entity.Author;
+import com.bibliotecadigital.entities.Author;
 
 import java.util.List;
 import java.util.Optional;

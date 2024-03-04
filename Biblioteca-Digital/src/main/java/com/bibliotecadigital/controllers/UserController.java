@@ -1,10 +1,10 @@
-package com.bibliotecadigital.controller;
+package com.bibliotecadigital.controllers;
 
 import com.bibliotecadigital.dto.CityDto;
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.dto.UserDto;
-import com.bibliotecadigital.entity.City;
-import com.bibliotecadigital.entity.User;
+import com.bibliotecadigital.entities.City;
+import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.enums.Gender;
 import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.service.ICityService;
@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -37,8 +38,8 @@ public class UserController {
 
     @GetMapping("/register")
     public String register(ModelMap model) {
-        List<City> cities = cityService.findAll();
-        model.put("cities", cities);
+
+        model.put("cities", cityService.findAll());
         model.put("genders", Gender.values());
 
         model.addAttribute("user", UserDto.builder().build());
@@ -50,16 +51,17 @@ public class UserController {
     public String register(ModelMap model, @ModelAttribute(name = "user") @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
+
             model.addAttribute("user", userDto);
-            List<City> cities = cityService.findAll();
-            model.put("cities", cities);
+            model.put("cities", cityService.findAll());
             model.put("genders", Gender.values());
+
             return "registro.html";
         }
 
         userService.register(userDto);
 
-        model.put("titulo", "¡Bienvenido a la Biblioteca!");
+        model.put("titulo", "¡Bienvenido a Biblioteca Digital!");
         model.put("descripcion", "Tu usuario fue registrado de manera satisfactoria.");
 
         return "exito.html";
@@ -69,17 +71,15 @@ public class UserController {
     @GetMapping("/edit-profile")
     public String editProfile(HttpSession session, ModelMap model, @RequestParam String id) {
 
-        User login = (User) session.getAttribute("usuariosession");
+        User login = (User) session.getAttribute("usersession");
 
         if (login == null || !login.getId().equals(id)) {
             return "redirect:/";
         }
 
-        List<City> cities = cityService.findAll();
-        model.put("cities", cities);
+        model.put("cities", cityService.findAll());
 
         model.put("genders", Gender.values());
-
 
         model.addAttribute("user", UserDto
                 .builder()
@@ -89,11 +89,7 @@ public class UserController {
                 .gender(login.getGender())
                 .phone(login.getPhone())
                 .role(login.getRole())
-                .cityDto(CityDto
-                        .builder()
-                        .id(login.getCity().getId())
-                        .name(login.getCity().getName())
-                        .build())
+                .idCity(login.getCity().getId())
                 .email(login.getEmail())
                 .password(login.getPassword())
                 .photoDto(PhotoDto

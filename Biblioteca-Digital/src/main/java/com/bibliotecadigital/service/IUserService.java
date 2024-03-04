@@ -1,7 +1,7 @@
 package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.dto.UserDto;
-import com.bibliotecadigital.entity.User;
+import com.bibliotecadigital.entities.User;
 
 import java.util.List;
 import java.util.Optional;

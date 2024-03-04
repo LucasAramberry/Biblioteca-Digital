@@ -15,8 +15,11 @@
 <h1 class="mb-3">Registrar editorial</h1>
 
 <div class="d-flex justify-content-center">
+
     <div class="w-75 text-light d-flex justify-content-center">
+
         <div class="mb-3">
+
             <form th:action="@{/publisher/register}" method="POST" enctype="multipart/form-data"
                   th:object="${publisher}">
 
@@ -40,6 +43,7 @@
                 <div class="d-grid gap-2 col-6 mx-auto">
                     <button type="submit" class="btn btn-primary">Registrar</button>
                 </div>
+
             </form>
         </div>
     </div>

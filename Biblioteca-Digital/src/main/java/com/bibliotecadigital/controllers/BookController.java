@@ -1,10 +1,10 @@
-package com.bibliotecadigital.controller;
+package com.bibliotecadigital.controllers;
 
 import com.bibliotecadigital.dto.BookDto;
 import com.bibliotecadigital.dto.LoanDto;
-import com.bibliotecadigital.entity.Author;
-import com.bibliotecadigital.entity.Book;
-import com.bibliotecadigital.entity.Publisher;
+import com.bibliotecadigital.entities.Author;
+import com.bibliotecadigital.entities.Book;
+import com.bibliotecadigital.entities.Publisher;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IBookService;
 import com.bibliotecadigital.service.IPublisherService;
@@ -36,15 +36,14 @@ public class BookController {
     @GetMapping
     public String books(ModelMap model, @RequestParam(required = false) String idBook, @RequestParam(required = false) String idAuthor, @RequestParam(required = false) String idPublisher) {
 
-        List<Book> bookActive = bookService.listBookActive();
-        model.put("bookActive", bookActive);
+        List<Book> booksActive = bookService.listBookActive();
 
-        List<Book> books = bookService.listBookInactive();
-        model.addAttribute("books", books);
+        model.put("booksActive", booksActive);
+        model.addAttribute("books", booksActive);
 
         if (idBook != null) {
             Optional<Book> bookForTitle = bookService.findById(idBook);
-            model.addAttribute("books", bookForTitle.get());
+            model.addAttribute("books", bookForTitle.isPresent() ? bookForTitle.get() : booksActive);
         }
 
         return "libros.html";
@@ -52,7 +51,6 @@ public class BookController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/view/{id}")
-
     public String viewBooks(@PathVariable String id, ModelMap model) {
         //pasamos la fecha actual por si qremos realizar el prestamo
         model.addAttribute("loan", LoanDto.builder().build());

@@ -1,8 +1,8 @@
 package com.bibliotecadigital.persistence.impl;
 
-import com.bibliotecadigital.entity.Photo;
+import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.persistence.IPhotoDAO;
-import com.bibliotecadigital.repository.PhotoRepository;
+import com.bibliotecadigital.repositories.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

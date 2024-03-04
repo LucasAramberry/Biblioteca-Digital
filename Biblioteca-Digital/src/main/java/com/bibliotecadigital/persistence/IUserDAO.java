@@ -1,9 +1,6 @@
 package com.bibliotecadigital.persistence;
 
-import com.bibliotecadigital.entity.Publisher;
-import com.bibliotecadigital.entity.User;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.bibliotecadigital.entities.User;
 
 import java.util.List;
 import java.util.Optional;

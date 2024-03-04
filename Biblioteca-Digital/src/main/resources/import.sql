@@ -16,3 +16,13 @@ INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_p
 INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_paginas, cantidad_copias, cantidad_copias_prestadas, cantidad_copias_restantes, alta, baja, id_autor, id_editorial, id_foto) VALUES (UUID(), '9780451524935', '1984', 'Novela distópica que presenta una visión sombría del futuro', '1949-06-08', 328, 120, 10, 110, NOW(), NULL, "3dde9186-d4c1-11ee-8549-d85ed3dfffce", "3de08ae9-d4c1-11ee-8549-d85ed3dfffce", NULL);
 INSERT INTO libros (id, isbn, titulo, descripcion, fecha_publicacion, cantidad_paginas, cantidad_copias, cantidad_copias_prestadas, cantidad_copias_restantes, alta, baja, id_autor, id_editorial, id_foto) VALUES (UUID(), '9780140449297', 'Don Quijote', 'Clásico de la literatura española que narra las aventuras de un hidalgo enloquecido', '1605-01-16', 1056, 80, 5, 75, NOW(), NULL, "3ddeef10-d4c1-11ee-8549-d85ed3dfffce", "3df05ae5-d4c1-11ee-8549-d85ed3dfffce", NULL);
 
+INSERT INTO ciudades (id, nombre) VALUES (1, 'Argentina');
+INSERT INTO ciudades (id, nombre) VALUES (2, 'París');
+INSERT INTO ciudades (id, nombre) VALUES (3, 'Tokio');
+INSERT INTO ciudades (id, nombre) VALUES (4, 'Londres');
+INSERT INTO ciudades (id, nombre) VALUES (5, 'Roma');
+INSERT INTO ciudades (id, nombre) VALUES (6, 'Sídney');
+INSERT INTO ciudades (id, nombre) VALUES (7, 'Ciudad de México');
+INSERT INTO ciudades (id, nombre) VALUES (8, 'Río de Janeiro');
+INSERT INTO ciudades (id, nombre) VALUES (9, 'Nueva York');
+INSERT INTO ciudades (id, nombre) VALUES (10, 'Moscú');
