@@ -38,18 +38,21 @@ public class LoanController {
     public String loans(ModelMap model, @RequestParam(required = false) String idUser) {
 
         List<User> listActive = userService.findAll();
+        System.out.println("listActive = " + listActive);
+
         model.addAttribute("users", listActive);
 
         model.addAttribute("userSelected", null);
 
         if (idUser != null) {
             List<Loan> loansUser = loanService.findByUser(idUser);
-            model.put("prestamos", loansUser);
+            model.put("loan", loansUser);
             model.addAttribute("userSelected", userService.findById(idUser));
         } else {
             List<Loan> loans = loanService.findAll();
             model.put("loans", loans);
         }
+
         return "prestamos.html";
     }
 
@@ -75,7 +78,7 @@ public class LoanController {
 
         User login = (User) session.getAttribute("usersession");
         if (login == null) {
-            return "redirect:/home";
+            return "redirect:/";
         }
 
         //Verificamos si es un administrador para pasarle la lista de users
@@ -100,7 +103,7 @@ public class LoanController {
         //no mandarlo a travez del input hidden del html
         User login = (User) session.getAttribute("usersession");
         if (login == null) {
-            return "redirect:/";
+            return "redirect:/error";
         }
 
         if (result.hasErrors()) {
@@ -112,6 +115,8 @@ public class LoanController {
         if (login.getRole().equals(Role.USER)) {
             //Si buscamos el usuario asi tenemos q habilitar el input hidden del html y
             //colocar el atributo como requerido y comentar el login ya q no haria falta
+
+            loanDto.setUser(login);
 
             loanService.register(loanDto);
 

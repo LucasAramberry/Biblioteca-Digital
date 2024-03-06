@@ -1,9 +1,7 @@
 package com.bibliotecadigital.controllers;
 
-import com.bibliotecadigital.dto.CityDto;
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.dto.UserDto;
-import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.enums.Gender;
 import com.bibliotecadigital.enums.Role;
@@ -14,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 
 /**
  * @author Lucas Aramberry
@@ -48,28 +45,28 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(ModelMap model, @ModelAttribute(name = "user") @Valid UserDto userDto, BindingResult result) {
+    public String register(Model model, @ModelAttribute(name = "user") @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
 
             model.addAttribute("user", userDto);
-            model.put("cities", cityService.findAll());
-            model.put("genders", Gender.values());
+            model.addAttribute("cities", cityService.findAll());
+            model.addAttribute("genders", Gender.values());
 
             return "registro.html";
         }
 
         userService.register(userDto);
 
-        model.put("titulo", "¡Bienvenido a Biblioteca Digital!");
-        model.put("descripcion", "Tu usuario fue registrado de manera satisfactoria.");
+        model.addAttribute("titulo", "¡Bienvenido a Biblioteca Digital!");
+        model.addAttribute("descripcion", "Tu usuario fue registrado de manera satisfactoria.");
 
         return "exito.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    @GetMapping("/edit-profile")
-    public String editProfile(HttpSession session, ModelMap model, @RequestParam String id) {
+    @GetMapping("/edit-profile/{id}")
+    public String editProfile(HttpSession session, ModelMap model, @PathVariable String id) {
 
         User login = (User) session.getAttribute("usersession");
 
@@ -107,25 +104,25 @@ public class UserController {
     public String updateProfile(ModelMap model, HttpSession session, @ModelAttribute(name = "user") @Valid UserDto userDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            model.addAttribute("user", userDto);
-            List<City> cities = cityService.findAll();
 
-            model.put("cities", cities);
+            model.addAttribute("user", userDto);
+            model.put("cities", cityService.findAll());
             model.put("genders", Gender.values());
 
             return "perfil.html";
         }
 
-        User login = (User) session.getAttribute("usuariosession");
+        User login = (User) session.getAttribute("usersession");
         if (login == null) {// || !login.getId().equals(id)
             return "redirect:/";
         }
 
         userService.update(login.getId(), userDto);
 
-        session.setAttribute("usuariosession", userService.findById(login.getId()));
+        Optional<User> user = userService.findById(login.getId());
+        session.setAttribute("usersession", user.get());
 
-        return "redirect:/inicio";
+        return "redirect:/";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

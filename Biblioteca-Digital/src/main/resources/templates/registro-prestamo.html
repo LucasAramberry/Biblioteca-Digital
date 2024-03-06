@@ -8,10 +8,10 @@
 <body>
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
-<a sec:authorize="hasRole('ROLE_ADMIN')" href="/prestamos">
+<a sec:authorize="hasRole('ROLE_ADMIN')" href="/loan">
     <i class="fas fa-arrow-left"></i>
 </a>
-<a sec:authorize="hasRole('ROLE_USER')" href="/prestamos/mis-prestamos">
+<a sec:authorize="hasRole('ROLE_USER')" href="/loan/my-loans">
     <i class="fas fa-arrow-left"></i>
 </a>
 
@@ -21,21 +21,13 @@
     <div class="w-75 text-light d-flex justify-content-center">
         <div class="mb-3">
 
-            <form th:action="@{/prestamos/registrar}" method="POST" enctype="multipart/form-data"
-                  th:object="${prestamo}">
+            <form th:action="@{/loan/register}" method="POST" enctype="multipart/form-data"
+                  th:object="${loan}">
 
                 <p th:if="${error != null}" th:text="${error}" class="error"></p>
 
-                <!--                <div class="mb-3">-->
-                <!--                    <label for="fechaPrestamo" class="col col-form-label">Fecha prestamo</label>-->
-                <!--                    <div class="col-sm-10 w-100">-->
-                <!--                        <input type="date" readonly class="form-control" id="fechaPrestamo" name="fechaPrestamo"-->
-                <!--                               th:value="${fechaPrestamo}"/>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-
                 <div class="mb-3">
-                    <label for="dateReturn" class="col col-form-label">Fecha devolucion</label>
+                    <label for="dateReturn" class="col col-form-label">Fecha devolución</label>
                     <div class="col-sm-10 w-100">
                         <input type="date" class="form-control" id="dateReturn" name="dateReturn"
                                th:field="*{dateReturn}"/>
@@ -43,21 +35,21 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="idLibro" class="col col-form-label">Libro</label>
+                    <label for="idBook" class="col col-form-label">Libro</label>
                     <div class="col-sm-10 w-100">
-                        <select class="form-select" id="idLibro" name="idLibro">
-                            <option th:each="libro : ${libros}" th:field="*{libro.id}"
-                                    th:text="${libro.titulo}"></option>
+                        <select class="form-select" id="idBook" name="idBook">
+                            <option th:each="book : ${books}" th:value="${book.id}"
+                                    th:text="${book.title}"></option>
                         </select>
                     </div>
                 </div>
 
                 <div sec:authorize="hasRole('ROLE_ADMIN')" class="mb-3">
-                    <label for="idUsuario" class="col col-form-label">Usuario</label>
+                    <label for="idUser" class="col col-form-label">Usuario</label>
                     <div class="col-sm-10 w-100">
-                        <select class="form-select" id="idUsuario" name="idUsuario">
-                            <option th:each="usuario : ${usuarios}" th:value="${usuario.id}"
-                                    th:text="${usuario.email}"></option>
+                        <select class="form-select" id="idUser" name="idUser">
+                            <option th:each="user : ${users}" th:value="${user.id}"
+                                    th:text="${user.email}"></option>
                         </select>
                     </div>
                 </div>

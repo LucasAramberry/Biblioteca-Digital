@@ -1,7 +1,5 @@
 package com.bibliotecadigital.dto;
 
-import com.bibliotecadigital.entities.Author;
-import com.bibliotecadigital.entities.Publisher;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,38 +16,40 @@ public class BookDto {
 
     private String id;
 
-    @NotBlank(message = "El isbn no puede ser nulo y debe contener 13 caracteres")
-    @Size(min = 13, max = 13, message = "El isbn no puede ser nulo y debe contener 13 caracteres")
+    @NotBlank(message = "Isbn cannot be null")
+    @Size(min = 13, max = 13, message = "Isbn must contains 13 digits")
     private String isbn;
 
-    @NotBlank(message = "El titulo no puede ser nulo")
+    @NotBlank(message = "Titulo cannot be null")
     private String title;
 
-    @NotBlank(message = "La descripcion no puede ser nula")
-    @Size(min = 50, max = 255, message = "La descripcion no puede ser nula")
+    @NotBlank(message = "Description cannot be null")
+    @Size(min = 25, max = 255, message = "Description contains min 25 characters")
     private String description;
 
-    @Future(message = "Fecha de publicacion invalida.")
+    @NotNull(message = "Date of publisher cannot be null")
+    @PastOrPresent(message = "Date of publisher is invalid.")
     private LocalDate datePublisher;
 
-    @NotNull(message = "Cantidad de paginas invalida.")
-    @Min(value = 5, message = "Cantidad de paginas invalida.")
+    @NotNull(message = "Amount of pages is invalid.")
+    @Min(value = 5, message = "Amount of pages cannot be < 5.")
     private Integer amountPages;
 
-    @NotNull(message = "Cantidad de ejemplares invalida.")
-    @Min(value = 1, message = "Cantidad de ejemplares invalida.")
+    @NotNull(message = "Amount of copies invalid.")
+    @Min(value = 1, message = "Amount of copies invalid.")
     private Integer amountCopies;
 
-    @NotNull(message = "Cantidad de ejemplares prestados invalida.")
-    @Min(value = 0, message = "Cantidad de ejemplares prestados invalida.")
+    @NotNull(message = "Amount of copies borrowed invalid.")
+    @Min(value = 0, message = "Amount of copies borrowed invalid.")
     private Integer amountCopiesBorrowed;
 
-    @NotNull()
     private Integer amountCopiesRemaining;
 
     private PhotoDto photoDto;
 
-    private Author author;
+    @NotBlank(message = "Author cannot be null.")
+    private String idAuthor;
 
-    private Publisher publisher;
+    @NotBlank(message = "Publisher cannot be null.")
+    private String idPublisher;
 }

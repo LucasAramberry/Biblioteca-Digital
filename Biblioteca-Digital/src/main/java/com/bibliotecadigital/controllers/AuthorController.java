@@ -3,9 +3,11 @@ package com.bibliotecadigital.controllers;
 import com.bibliotecadigital.dto.AuthorDto;
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.entities.Author;
-import com.bibliotecadigital.entities.Book;
+import com.bibliotecadigital.entities.User;
+import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IBookService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +17,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,16 +34,24 @@ public class AuthorController {
     private IBookService bookService;
 
     @GetMapping
-    public String authors(ModelMap model, @RequestParam(required = false) String idAuthor) {
+    public String authors(ModelMap model, HttpSession session, @RequestParam(required = false) String idAuthor) {
 
-        List<Author> authorsActive = authorService.findByActive();
+        List<Author> authorsList;// lista desplegable
 
-        model.addAttribute("authorsActive", authorsActive);
-        model.addAttribute("authors", authorsActive);
+        User userLogin = (User) session.getAttribute("usersession");
+        if (userLogin != null && userLogin.getRole().equals(Role.ADMIN)) {
+            authorsList = authorService.findAll();
+        } else {
+            authorsList = authorService.findByActive();
+        }
+
+        model.addAttribute("authorsList", authorsList);
 
         if (idAuthor != null) {
             model.addAttribute("books", bookService.findByAuthor(idAuthor));
             model.addAttribute("authors", authorService.findById(idAuthor));
+        } else {
+            model.addAttribute("authors", authorsList.stream().toList());
         }
 
         return "autores.html";

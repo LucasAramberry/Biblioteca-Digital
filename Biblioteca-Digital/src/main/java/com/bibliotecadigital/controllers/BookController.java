@@ -2,6 +2,7 @@ package com.bibliotecadigital.controllers;
 
 import com.bibliotecadigital.dto.BookDto;
 import com.bibliotecadigital.dto.LoanDto;
+import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.entities.Author;
 import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.entities.Publisher;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,18 +51,39 @@ public class BookController {
         return "libros.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/view/{id}")
     public String viewBooks(@PathVariable String id, ModelMap model) {
-        //pasamos la fecha actual por si qremos realizar el prestamo
+
         model.addAttribute("loan", LoanDto.builder().build());
 
-        model.put("book", bookService.findById(id));
+        Optional<Book> book = bookService.findById(id);
+
+        model.addAttribute("book", BookDto
+                .builder()
+                .id(book.get().getId())
+                .isbn(book.get().getIsbn())
+                .title(book.get().getTitle())
+                .description(book.get().getDescription())
+                .datePublisher(book.get().getDatePublisher())
+                .amountPages(book.get().getAmountPages())
+                .amountCopies(book.get().getAmountCopies())
+                .amountCopiesBorrowed(book.get().getAmountCopiesBorrowed())
+                .amountCopiesRemaining(book.get().getAmountCopiesRemaining())
+                .photoDto(PhotoDto
+                        .builder()
+                        .file((MultipartFile) book.get().getPhoto())
+                        .build()
+                )
+                .idAuthor(book.get().getAuthor().getId())
+                .idPublisher(book.get().getPublisher().getId())
+                .build()
+        );
 
         return "libro.html";
     }
 
-    //    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/register")
     public String registerBook(ModelMap model) {
 
@@ -74,7 +97,7 @@ public class BookController {
         return "registro-libro.html";
     }
 
-    //    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public String registerBook(ModelMap model, @ModelAttribute(name = "book") @Valid BookDto bookDto, BindingResult result) {
 
@@ -95,55 +118,72 @@ public class BookController {
         return "exito.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/update")
-    public String updateBook(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/update/{id}")
+    public String updateBook(ModelMap model, @PathVariable String id) {
 
-        List<Author> authors = authorService.findAll();
-        model.put("authors", authors);
+        model.put("authors", authorService.findAll());
+        model.put("publishers", publisherService.findAll());
 
-        List<Publisher> publishers = publisherService.findAll();
-        model.put("publishers", publishers);
+        Optional<Book> book = bookService.findById(id);
 
-        model.addAttribute("book", bookService.findById(id));
+        model.addAttribute("book", BookDto
+                .builder()
+                .id(book.get().getId())
+                .isbn(book.get().getIsbn())
+                .title(book.get().getTitle())
+                .description(book.get().getDescription())
+                .datePublisher(book.get().getDatePublisher())
+                .amountPages(book.get().getAmountPages())
+                .amountCopies(book.get().getAmountCopies())
+                .amountCopiesBorrowed(book.get().getAmountCopiesBorrowed())
+                .amountCopiesRemaining(book.get().getAmountCopiesRemaining())
+                .photoDto(PhotoDto
+                        .builder()
+                        .file((MultipartFile) book.get().getPhoto())
+                        .build()
+                )
+                .idAuthor(book.get().getAuthor().getId())
+                .idPublisher(book.get().getPublisher().getId())
+                .build()
+        );
 
         return "modificar-libro.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/update")
-    public String updateBook(ModelMap model, @RequestParam String id, @ModelAttribute(name = "book") @Valid BookDto bookDto, BindingResult result) {
+    public String updateBook(ModelMap model, @ModelAttribute(name = "book") @Valid BookDto bookDto, BindingResult result) {
 
         if (result.hasErrors()) {
             model.addAttribute("book", bookDto);
-            List<Author> authors = authorService.findAll();
-            List<Publisher> publishers = publisherService.findAll();
-            model.put("authors", authors);
-            model.put("publishers", publishers);
+            model.put("authors", authorService.findAll());
+            model.put("publishers", publisherService.findAll());
             return "modificar-libro.html";
         }
 
-        bookService.update(id, bookDto);
+        bookService.update(bookDto.getId(), bookDto);
+
         return "redirect:/book";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/low")
-    public String low(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/low/{id}")
+    public String low(ModelMap model, @PathVariable String id) {
         bookService.low(id);
         return "redirect:/book";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/high")
-    public String high(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/high/{id}")
+    public String high(ModelMap model, @PathVariable String id) {
         bookService.high(id);
         return "redirect:/book";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/delete")
-    public String delete(ModelMap model, @RequestParam String id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/delete/{id}")
+    public String delete(ModelMap model, @PathVariable String id) {
         bookService.delete(id);
         return "redirect:/book";
     }

@@ -1,10 +1,10 @@
 package com.bibliotecadigital.dto;
 
-import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.enums.Gender;
 import com.bibliotecadigital.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,34 +19,37 @@ public class UserDto {
 
     private String id;
 
-    @NotBlank(message = "El nombre no puede ser nulo.")
+    @NotBlank(message = "Name cannot be null.")
+    @Size(min = 3, max = 25, message = "Name min length is 3.")
     private String name;
 
-    @NotBlank(message = "El apellido no puede ser nulo.")
+    @NotBlank(message = "Lastname cannot be null.")
+    @Size(min = 3, max = 25, message = "Lastname min length is 3.")
     private String lastName;
 
-    @NotBlank(message = "El documento no puede ser nulo.")
-    @Size(min = 7, max = 10, message = "El documento no puede ser nulo.")
+    @NotBlank(message = "Dni cannot be null.")
+    @Size(min = 7, max = 10, message = "Dni min length is 7.")
     private String dni;
 
-    @NotBlank(message = "El teléfono no puede ser nulo.")
-    @Size(min = 8, max = 20, message = "El teléfono no puede ser nulo.")
+    @NotBlank(message = "Phone cannot be null.")
+    @Size(min = 8, max = 20, message = "Phone min length is 8.")
     private String phone;
 
     private Gender gender;
 
     private Role role;
 
-//    private CityDto cityDto;
+    @NotNull(message = "City cannot be null.")
     private Long idCity;
 
     private PhotoDto photoDto;
 
-    @Email(message = "El email no puede ser nulo.")
+    @NotBlank(message = "Email cannot be null.")
+    @Email(message = "Email incorrect format.")
     private String email;
 
-    @NotBlank(message = "Clave invalida. Debe contener al menos 6 digitos.")
-    @Size(min = 6, max = 16, message = "Clave invalida. Debe contener al menos 6 digitos.")
+    @NotBlank(message = "Invalid password. Must contain at least 6 digits.")
+    @Size(min = 6, max = 16, message = "Invalid password. Must contain at least 6 digits.")
     private String password;
 
     private String matchingPassword;

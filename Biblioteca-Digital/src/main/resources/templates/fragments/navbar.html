@@ -46,7 +46,7 @@
                        sec:authorize="hasRole('ROLE_USER')">Mis Prestamos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/user/edit-profile(id=__${session.usersession.id}__)}"
+                    <a class="nav-link" th:href="@{/user/edit-profile/__${session.usersession.id}__}"
                        th:if="${session.usersession != null}">Editar Perfil</a>
                 </li>
                 <li class="nav-item">

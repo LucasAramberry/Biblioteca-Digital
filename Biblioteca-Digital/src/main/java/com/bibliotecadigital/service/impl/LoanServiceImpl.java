@@ -1,6 +1,7 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.LoanDto;
+import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.entities.Loan;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.ILoanDAO;
@@ -55,8 +56,14 @@ public class LoanServiceImpl implements ILoanService {
     @Override
     public void register(LoanDto loanDto) throws ErrorException {
 
-        //realizar el seteo del ejemplar prestado en el libro
-        bookService.lendBook(loanDto.getBook());
+        Optional<Book> book = bookService.findById(loanDto.getIdBook());
+
+        if (book.isPresent()) {
+            //realizar el seteo del ejemplar prestado en el libro
+            bookService.lendBook(book.get());
+        } else {
+            throw new ErrorException("Book is null");
+        }
 
         save(Loan
                 .builder()
@@ -64,7 +71,7 @@ public class LoanServiceImpl implements ILoanService {
                 .dateReturn(loanDto.getDateReturn())
                 .register(LocalDateTime.now())
                 .unsubscribe(null)
-                .book(loanDto.getBook())
+                .book(book.get())
                 .user(loanDto.getUser())
                 .build());
 
@@ -81,6 +88,12 @@ public class LoanServiceImpl implements ILoanService {
     @Override
     public void update(Long id, LoanDto loanDto) throws ErrorException {
 
+        Optional<Book> book = bookService.findById(loanDto.getIdBook());
+
+        if (!book.isPresent()) {
+            throw new ErrorException("Book is null");
+        }
+
         Optional<Loan> response = findById(id);
 
         if (response.isPresent()) {
@@ -92,14 +105,14 @@ public class LoanServiceImpl implements ILoanService {
             loan.setDateLoan(loanDto.getDateLoan());
             loan.setDateReturn(loanDto.getDateReturn());
 
-            if (loan.getBook() != loanDto.getBook()) {
+            if (loan.getBook() != book.get()) {
                 //realizamos el seteo del ejemplar prestado en el libro nuevo
-                bookService.lendBook(loanDto.getBook());
+                bookService.lendBook(book.get());
                 //devolvemos el ejemplar del libro que habiamos pedido
                 bookService.devolutionBook(loan.getBook());
+                loan.setBook(book.get());
             }
 
-            loan.setBook(loanDto.getBook());
             loan.setUser(loanDto.getUser());
 
             save(loan);

@@ -30,7 +30,10 @@
                 </div>
 
                 <div class="col-md-8 card-body1">
-                    <h5 class="text-center" th:text="${book.title}"></h5><br>
+
+                    <h5 class="text-center" th:text="${book.title}"></h5>
+                    <br>
+
                     <ul>
                         <li sec:authorize="hasRole('ADMIN')" class="items" th:text="'ID: ' + ${book.id}"></li>
                         <li class="items" th:text="'ISBN: ' + ${book.isbn}"></li>
@@ -45,7 +48,8 @@
                             th:text="'EJEMPLARES PRESTADOS: ' + ${book.amountCopiesBorrowed}"></li>
                         <li class="items" th:text="'EJEMPLARES DISPONIBLES: ' + ${book.amountCopiesRemaining}"></li>
                         <li sec:authorize="hasRole('ADMIN')" class="items" th:text="'ALTA: ' + ${book.register}"></li>
-                        <li sec:authorize="hasRole('ADMIN')" class="items" th:text="'BAJA: ' + ${book.unsubscribe}"></li>
+                        <li sec:authorize="hasRole('ADMIN')" class="items"
+                            th:text="'BAJA: ' + ${book.unsubscribe}"></li>
 
                     </ul>
 
@@ -54,7 +58,7 @@
                         <a class="btn btn-success" th:if="${book.unsubscribe != null}"
                            th:href="@{/book/high/__${book.id}__}" role="button">DAR ALTA</a>
 
-                        <a class="btn btn-danger" th:unless="${libro.unsubscribe != null}"
+                        <a class="btn btn-danger" th:unless="${book.unsubscribe != null}"
                            th:href="@{/book/low/__${book.id}__}" role="button">DAR BAJA</a>
 
                         <a class="btn btn-warning" th:href="@{/book/update/__${book.id}__}" role="button">MODIFICAR</a>
@@ -67,34 +71,41 @@
                 </div>
 
                 <div sec:authorize="hasRole('ROLE_USER')" class="card-prestamo">
+
                     <form th:action="@{/loan/register}" method="POST" th:object="${loan}">
+
                         <div>
                             <div class="text-center">
                                 <h5>Prestamo</h5>
                                 <p>Si desea realizar un prestamo de este libro complete lo siguiente:</p>
                             </div>
                         </div>
+
+                        <div>
+                            <span th:errors="*{dateReturn}" class="text-danger"
+                                  th:if="${#fields.hasErrors('dateReturn')}"></span>
+                        </div>
+
                         <div class="fechas">
-                            <!--                                        <div class="inputFecha">-->
-                            <!--                                            <label id="colorLabel" for="fechaPrestamo">Fecha Prestamo</label>-->
-                            <!--                                            <input type="date" readonly class="form-control" name="fechaPrestamo" th:value="LocalDate.now()">-->
-                            <!--                                        </div>-->
+
                             <div class="inputFecha">
-                                <label id="colorLabel" for="dateReturn">Fecha Devolucion</label>
+                                <label for="dateReturn">Fecha Devolucion</label>
                                 <input type="date" class="form-control" id="dateReturn" name="dateReturn"
                                        th:field="*{dateReturn}">
                             </div>
 
                             <div>
-                                <input type="hidden" class="form-control" name="idBook" th:value="${book.id}"/>
+                                <input type="hidden" name="idBook" id="idBook" th:value="${book.id}"/>
                             </div>
 
                         </div>
+
                         <div class="d-flex justify-content-center">
                             <div class="form-group2">
                                 <button type="submit" class="btn btn-danger">Crear Prestamo</button>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>

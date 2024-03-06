@@ -8,7 +8,7 @@
 <body>
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
-<a href="/libros">
+<a href="/book">
     <i class="fas fa-arrow-left"></i>
 </a>
 
@@ -18,95 +18,109 @@
     <div class="w-75 text-light d-flex justify-content-center">
         <div class="mb-3">
 
-            <form th:action="@{/libros/registrar}" method="POST" enctype="multipart/form-data">
+            <form th:action="@{/book/register}" method="POST" enctype="multipart/form-data" th:object="${book}">
 
                 <p th:if="${error != null}" th:text="${error}" class="error"></p>
 
                 <div class="mb-3">
                     <label for="isbn" class="col col-form-label">ISBN</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="isbn" name="isbn" th:value="${isbn}"/>
+                        <input type="text" class="form-control" id="isbn" name="isbn" th:field="*{isbn}"/>
                     </div>
                 </div>
+                <span th:errors="*{isbn}" class="text-danger" th:if="${#fields.hasErrors('isbn')}"></span>
 
                 <div class="mb-3">
-                    <label for="titulo" class="col col-form-label">Titulo</label>
+                    <label for="title" class="col col-form-label">Titulo</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="titulo" name="titulo" th:value="${titulo}"/>
+                        <input type="text" class="form-control" id="title" name="title" th:field="*{title}"/>
                     </div>
                 </div>
+                <span th:errors="*{title}" class="text-danger" th:if="${#fields.hasErrors('title')}"></span>
 
                 <div class="mb-3">
-                    <label for="descripcion" class="col col-form-label">Descripcion</label>
+                    <label for="description" class="col col-form-label">Descripcion</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="descripcion" name="descripcion"
-                               th:value="${descripcion}"/>
+                        <input type="text" class="form-control" id="description" name="description"
+                               th:field="*{description}"/>
                     </div>
                 </div>
+                <span th:errors="*{description}" class="text-danger" th:if="${#fields.hasErrors('description')}"></span>
 
                 <div class="mb-3">
-                    <label for="archivo" class="col col-form-label">Foto</label>
+                    <label for="file" class="col col-form-label">Foto</label>
                     <div class="col-sm-10 w-100">
-                        <input type="file" class="form-control" id="archivo" name="archivo"/>
+                        <input type="file" class="form-control" id="file" name="file" th:field="*{photoDto.file}"/>
                     </div>
                 </div>
+<!--                <span th:errors="*{photoDto.file}" class="text-danger" th:if="${#fields.hasErrors('photoDto.file')}"></span>-->
 
                 <div class="mb-3">
-                    <label for="fechaPublicacion" class="col col-form-label">Fecha publicacion</label>
+                    <label for="datePublisher" class="col col-form-label">Fecha publicacion</label>
                     <div class="col-sm-10 w-100">
-                        <input type="date" min="1376-01-01" class="form-control" id="fechaPublicacion"
-                               name="fechaPublicacion" th:value="${fechaPublicacion}"/>
+                        <input type="date" min="1376-01-01" class="form-control" id="datePublisher"
+                               name="datePublisher" th:field="*{datePublisher}"/>
                     </div>
                 </div>
+                <span th:errors="*{datePublisher}" class="text-danger"
+                      th:if="${#fields.hasErrors('datePublisher')}"></span>
 
                 <div class="mb-3">
-                    <label for="cantidadPaginas" class="col col-form-label">Cantidad de paginas</label>
+                    <label for="amountPages" class="col col-form-label">Cantidad de paginas</label>
                     <div class="col-sm-10 w-100">
-                        <input type="number" min="1" class="form-control" id="cantidadPaginas" name="cantidadPaginas"
-                               th:value="${cantidadPaginas}"/>
+                        <input type="number" min="1" class="form-control" id="amountPages" name="amountPages"
+                               th:field="*{amountPages}"/>
                     </div>
                 </div>
+                <span th:errors="*{amountPages}" class="text-danger" th:if="${#fields.hasErrors('amountPages')}"></span>
 
                 <div class="mb-3">
-                    <label for="ejemplares" class="col col-form-label">Ejemplares</label>
+                    <label for="amountCopies" class="col col-form-label">Ejemplares</label>
                     <div class="col-sm-10 w-100">
-                        <input type="number" class="form-control" id="ejemplares" name="ejemplares"
-                               th:value="${ejemplares}"/>
+                        <input type="number" class="form-control" id="amountCopies" name="amountCopies"
+                               th:field="*{amountCopies}"/>
                     </div>
                 </div>
+                <span th:errors="*{amountCopies}" class="text-danger"
+                      th:if="${#fields.hasErrors('amountCopies')}"></span>
 
                 <div class="mb-3">
-                    <label for="ejemplaresPrestados" class="col col-form-label">Ejem. prestados</label>
+                    <label for="amountCopiesBorrowed" class="col col-form-label">Ejem. prestados</label>
                     <div class="col-sm-10 w-100">
                         <input
                                 type="number"
                                 class="form-control"
-                                id="ejemplaresPrestados"
-                                name="ejemplaresPrestados"
-                                th:value="${ejemplaresPrestados}"
+                                id="amountCopiesBorrowed"
+                                name="amountCopiesBorrowed"
+                                th:field="*{amountCopiesBorrowed}"
                         />
                     </div>
                 </div>
+                <span th:errors="*{amountCopiesBorrowed}" class="text-danger"
+                      th:if="${#fields.hasErrors('amountCopiesBorrowed')}"></span>
 
                 <div class="mb-3">
-                    <label for="idAutor" class="col col-form-label">Autor</label>
+                    <label for="idAuthor" class="col col-form-label">Autor</label>
                     <div class="col-sm-10 w-100">
-                        <select class="form-select" id="idAutor" name="idAutor">
-                            <option th:each="autor : ${autores}" th:value="${autor.id}"
-                                    th:text="${autor.nombre}"></option>
+                        <select class="form-select" id="idAuthor" name="idAuthor">
+                            <option th:each="author : ${authors}" th:value="${author.id}" th:field="*{idAuthor}"
+                                    th:text="${author.name}"></option>
                         </select>
                     </div>
                 </div>
+                <span th:errors="*{idAuthor}" class="text-danger" th:if="${#fields.hasErrors('idAuthor')}"></span>
 
                 <div class="mb-3">
-                    <label for="idEditorial" class="col col-form-label">Editorial</label>
+                    <label for="idPublisher" class="col col-form-label">Editorial</label>
                     <div class="col-sm-10 w-100">
-                        <select class="form-select" id="idEditorial" name="idEditorial">
-                            <option th:each="editorial : ${editoriales}" th:value="${editorial.id}"
-                                    th:text="${editorial.nombre}"></option>
+                        <select class="form-select" id="idPublisher" name="idPublisher">
+                            <option th:each="publisher : ${publishers}" th:value="${publisher.id}"
+                                    th:field="*{idPublisher}"
+                                    th:text="${publisher.name}"></option>
                         </select>
                     </div>
                 </div>
+                <span th:errors="*{idPublisher}" class="text-danger" th:if="${#fields.hasErrors('idPublisher')}"></span>
 
                 <div class="d-grid gap-2 col-6 mx-auto boton-libro">
                     <button type="submit" class="btn btn-primary">Registrar</button>

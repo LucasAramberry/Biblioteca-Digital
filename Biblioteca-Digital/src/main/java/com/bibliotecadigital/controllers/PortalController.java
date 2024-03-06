@@ -23,7 +23,7 @@ public class PortalController {
             model.put("error", "Email o contraseña incorrectos.");
         }
         if (logout != null) {
-            model.put("logout", "Ha salido correctamente de la plataforma.");
+            model.put("logout", "Ha cerrado sesión correctamente.");
         }
 
         return "login.html";

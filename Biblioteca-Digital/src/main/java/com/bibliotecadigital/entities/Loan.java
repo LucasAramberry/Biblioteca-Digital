@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- *
  * @author Lucas Aramberry
  */
 @Data
@@ -46,9 +45,11 @@ public class Loan {
     @Column(name = "baja", columnDefinition = "DATETIME")
     private LocalDateTime unsubscribe;
 
-    @OneToOne
+    @OneToOne(targetEntity = Book.class)
+    @JoinColumn(name = "id_libro")
     private Book book;
 
-    @OneToOne
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "id_usuario")
     private User user;
 }

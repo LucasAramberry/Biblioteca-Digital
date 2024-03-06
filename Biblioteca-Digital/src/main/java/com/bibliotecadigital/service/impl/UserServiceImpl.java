@@ -99,14 +99,10 @@ public class UserServiceImpl implements IUserService {
 
             user.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
 
-            Long idFoto = null;
-
-            if (user.getPhoto() != null) {
-                idFoto = user.getPhoto().getId();
+            if (user.getPhoto() != null && !userDto.getPhotoDto().getFile().isEmpty()) {
+                Photo photo = photoService.update(user.getPhoto().getId(), userDto.getPhotoDto());
+                user.setPhoto(photo);
             }
-
-            Photo photo = photoService.update(idFoto, userDto.getPhotoDto());
-            user.setPhoto(photo);
 
             save(user);
 
@@ -210,7 +206,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public List<User> findAll() {
-        return null;
+        return userDAO.findAll();
     }
 
     @Override

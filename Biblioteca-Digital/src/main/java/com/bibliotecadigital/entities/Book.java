@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- *
  * @author Lucas Aramberry
  */
 @Data
@@ -66,13 +65,13 @@ public class Book {
     @JoinColumn(name = "id_foto")
     private Photo photo;
 
-    @OneToOne(targetEntity = Author.class,cascade = CascadeType.REMOVE)
+    @ManyToOne(targetEntity = Author.class)
     @JoinColumn(name = "id_autor")
     private Author author;
 //    @OneToMany(targetEntity = Author.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "book")
 //    private List<Author> authors;
 
-    @OneToOne(targetEntity = Publisher.class,cascade = CascadeType.REMOVE)
+    @ManyToOne(targetEntity = Publisher.class)
     @JoinColumn(name = "id_editorial")
     private Publisher publisher;
 //    @OneToMany(targetEntity = Publisher.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "book")

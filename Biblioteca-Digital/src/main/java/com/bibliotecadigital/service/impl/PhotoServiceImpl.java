@@ -26,7 +26,8 @@ public class PhotoServiceImpl implements IPhotoService {
     @Transactional
     @Override
     public Photo register(PhotoDto photoDto) {
-        if (!photoDto.getFile().isEmpty() || photoDto.getFile() != null) {
+
+        if (!photoDto.getFile().isEmpty() && photoDto.getFile() != null) {
 
             try {
 
@@ -53,7 +54,7 @@ public class PhotoServiceImpl implements IPhotoService {
     @Override
     public Photo update(Long idFoto, PhotoDto photoDto) {
 
-        if (!photoDto.getFile().isEmpty() || photoDto.getFile() != null) {
+        if (!photoDto.getFile().isEmpty() && photoDto.getFile() != null) {
 
             try {
 

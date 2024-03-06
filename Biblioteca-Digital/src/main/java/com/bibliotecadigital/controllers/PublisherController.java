@@ -3,8 +3,11 @@ package com.bibliotecadigital.controllers;
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.dto.PublisherDto;
 import com.bibliotecadigital.entities.Publisher;
+import com.bibliotecadigital.entities.User;
+import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.service.IBookService;
 import com.bibliotecadigital.service.IPublisherService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +16,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @author Lucas Aramberry
@@ -27,14 +32,24 @@ public class PublisherController {
     private IBookService bookService;
 
     @GetMapping
-    public String publishers(ModelMap model, @RequestParam(required = false) String idPublisher) {
+    public String publishers(ModelMap model, HttpSession session, @RequestParam(required = false) String idPublisher) {
 
-        model.addAttribute("publisherActive", publisherService.findByActive());
-        model.addAttribute("publishers", publisherService.findAll());
+        List<Publisher> publisherList;
+
+        User userLogin = (User) session.getAttribute("usersession");
+        if (userLogin != null && userLogin.getRole().equals(Role.ADMIN)) {
+            publisherList = publisherService.findAll();
+        } else {
+            publisherList = publisherService.findByActive();
+        }
+
+        model.addAttribute("publisherList", publisherList);
 
         if (idPublisher != null) {
             model.addAttribute("books", bookService.findByPublisher(idPublisher));
             model.addAttribute("publishers", publisherService.findById(idPublisher));
+        } else {
+            model.addAttribute("publishers", publisherList.stream().toList());
         }
 
         return "editoriales.html";

@@ -41,9 +41,9 @@ public class BookServiceImpl implements IBookService {
     @Override
     public void register(BookDto bookDto) {
 
-        Author author = authorService.findById(bookDto.getAuthor().getId());
+        Author author = authorService.findById(bookDto.getIdAuthor());
 
-        Publisher publisher = publisherService.findById(bookDto.getPublisher().getId());
+        Publisher publisher = publisherService.findById(bookDto.getIdPublisher());
 
         Photo photo = photoService.register(bookDto.getPhotoDto());
 
@@ -56,7 +56,7 @@ public class BookServiceImpl implements IBookService {
                 .amountPages(bookDto.getAmountPages())
                 .amountCopies(bookDto.getAmountCopies())
                 .amountCopiesBorrowed(bookDto.getAmountCopiesBorrowed())
-                .amountCopiesRemaining(bookDto.getAmountCopiesRemaining())
+                .amountCopiesRemaining((bookDto.getAmountCopies() - bookDto.getAmountCopiesBorrowed()))
                 .register(LocalDateTime.now())
                 .author(((author != null) ? author : null))
                 .publisher(((publisher != null) ? publisher : null))
@@ -81,9 +81,9 @@ public class BookServiceImpl implements IBookService {
 
             Book book = response.get();
 
-            Author author = authorService.findById(bookDto.getAuthor().getId());
+            Author author = authorService.findById(bookDto.getIdAuthor());
 
-            Publisher publisher = publisherService.findById(bookDto.getPublisher().getId());
+            Publisher publisher = publisherService.findById(bookDto.getIdPublisher());
 
             book.setIsbn(bookDto.getIsbn());
             book.setTitle(bookDto.getTitle());

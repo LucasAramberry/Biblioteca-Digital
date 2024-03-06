@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Biblioteca - Editar perfil</title>
     <head th:replace="~{/fragments/head :: head}"></head>
@@ -18,95 +18,104 @@
     <div class="w-75 direction text-light">
         <div>
             <div class="img-mod">
-                <img th:if="${usuario.foto != null}" class="rounded mx-auto d-block"
-                     th:src="${'/foto/usuario/' + usuario.id}" width="180px" height="190px" alt="Foto de perfil"/>
+                <img th:if="${user.photoDto}" class="rounded mx-auto d-block"
+                     th:src="@{'/photo/user/' + ${user.id}}" width="180px" height="190px" alt="Foto de perfil"/>
             </div>
         </div>
         <div class="mb-3">
-            <form th:action="@{/usuario/actualizar-perfil}" method="POST" enctype="multipart/form-data">
+            <form th:action="@{/user/update-profile}" method="POST" enctype="multipart/form-data" th:object="${user}">
 
-                <p th:if="${error != null}" th:text="${error}" class="error"></p>
-
-                <input type="hidden" name="id" th:value="${usuario.id}">
+                <input type="hidden" name="id" th:field="*{id}">
 
                 <div class="mb-3">
-                    <label for="nombre" class="col col-form-label">Nombre</label>
+                    <label for="name" class="col col-form-label">Nombre</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="nombre" name="nombre" th:value="${usuario.nombre}"/>
+                        <input type="text" class="form-control" id="name" name="name" th:field="*{name}" required/>
                     </div>
                 </div>
+                <span th:errors="*{name}" class="text-danger" th:if="${#fields.hasErrors('name')}"></span>
 
                 <div class="mb-3">
-                    <label for="apellido" class="col col-form-label">Apellido</label>
+                    <label for="lastName" class="col col-form-label">Apellido</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="apellido" name="apellido"
-                               th:value="${usuario.apellido}"/>
+                        <input type="text" class="form-control" id="lastName" name="lastName" th:field="*{lastName}"/>
                     </div>
                 </div>
+                <span th:errors="*{lastName}" class="text-danger" th:if="${#fields.hasErrors('lastName')}"></span>
 
                 <div class="mb-3">
-                    <label for="documento" class="col col-form-label">Documento</label>
+                    <label for="dni" class="col col-form-label">Documento</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="documento" name="documento"
-                               th:value="${usuario.documento}"/>
+                        <input type="text" class="form-control" id="dni" name="dni" th:field="*{dni}" required/>
                     </div>
                 </div>
+                <span th:errors="*{dni}" class="text-danger" th:if="${#fields.hasErrors('dni')}"></span>
 
                 <div class="mb-3">
-                    <label for="telefono" class="col col-form-label">Telefono</label>
+                    <label for="phone" class="col col-form-label">Teléfono</label>
                     <div class="col-sm-10 w-100">
-                        <input type="text" class="form-control" id="telefono" name="telefono"
-                               th:value="${usuario.telefono}"/>
+                        <input type="text" class="form-control" id="phone" name="phone" th:field="*{phone}" required/>
                     </div>
                 </div>
+                <span th:errors="*{phone}" class="text-danger" th:if="${#fields.hasErrors('phone')}"></span>
 
                 <div class="mb-3">
-                    <label for="sexo" class="col col-form-label">Sexo</label>
+                    <label for="gender" class="col col-form-label">Sexo</label>
                     <div class="col-sm-10 w-100">
-                        <select class="form-select" id="sexo" name="sexo">
-                            <option th:each="sexo : ${sexos}" th:value="${sexo}" th:text="${sexo}"
-                                    th:selected="${usuario.sexo != null && sexo == usuario.sexo}"></option>
+                        <select class="form-select" id="gender" name="gender">
+                            <option selected disabled>Seleccionar...</option>
+                            <option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender}"
+                                    th:selected="${user.gender != null && gender == user.gender}"></option>
                         </select>
                     </div>
                 </div>
+                <span th:errors="*{gender}" class="text-danger" th:if="${#fields.hasErrors('gender')}"></span>
 
                 <div class="mb-3">
-                    <label for="idZona" class="col col-form-label">Zona</label>
+                    <label for="idCity" class="col col-form-label">Zona</label>
                     <div class="col-sm-10 w-100">
-                        <select class="form-select" id="idZona" name="idZona">
-                            <option th:each="zona : ${zonas}" th:value="${zona.id}" th:text="${zona.nombre}"
-                                    th:selected="${usuario.zona != null && zona.id == usuario.zona.id}"></option>
+                        <select class="form-select" id="idCity" name="idCity">
+                            <option th:each="city : ${cities}" th:value="${city.id}"
+                                    th:field="*{idCity}" th:text="${city.name}"
+                                    th:selected="${user.idCity != null && city.id == user.idCity}"></option>
                         </select>
                     </div>
                 </div>
+                <span th:errors="*{idCity}" class="text-danger" th:if="${#fields.hasErrors('idCity')}"></span>
 
                 <div class="mb-3">
-                    <label for="archivo" class="col col-form-label">Foto</label>
+                    <label for="file" class="col col-form-label">Foto</label>
                     <div class="col-sm-10 w-100">
-                        <input type="file" class="form-control" id="archivo" name="archivo"/>
+                        <input type="file" class="form-control" id="file" name="file" th:field="*{photoDto.file}"/>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="mail" class="col col-form-label">E-mail</label>
+                    <label for="email" class="col col-form-label">Email</label>
                     <div class="col-sm-10 w-100">
-                        <input type="email" class="form-control" id="mail" name="mail" th:value="${usuario.mail}"/>
+                        <input type="email" class="form-control" id="email" name="email" th:field="*{email}"/>
                     </div>
                 </div>
+                <span th:errors="*{email}" class="text-danger" th:if="${#fields.hasErrors('email')}"></span>
 
                 <div class="mb-3">
-                    <label for="clave" class="col col-form-label">Contraseña</label>
+                    <label for="password" class="col col-form-label">Contraseña</label>
                     <div class="col-sm-10 w-100">
-                        <input type="password" class="form-control" id="clave" name="clave" th:value="${clave}"/>
+                        <input type="password" class="form-control" id="password" name="password"
+                               th:field="*{password}"/>
                     </div>
                 </div>
+                <span th:errors="*{password}" class="text-danger" th:if="${#fields.hasErrors('password')}"></span>
 
                 <div class="mb-3">
-                    <label for="clave2" class="col col-form-label">Repetir Contraseña</label>
+                    <label for="matchingPassword" class="col col-form-label">Repetir Contraseña</label>
                     <div class="col-sm-10 w-100">
-                        <input type="password" class="form-control" id="clave2" name="clave2" th:value="${clave2}"/>
+                        <input type="password" class="form-control" id="matchingPassword" name="matchingPassword"
+                               th:field="*{matchingPassword}"/>
                     </div>
                 </div>
+                <span th:errors="*{matchingPassword}" class="text-danger"
+                      th:if="${#fields.hasErrors('matchingPassword')}"></span>
 
                 <div class="d-grid gap-2 col-6 mx-auto">
                     <button type="submit" class="btn btn-primary boton-libro">Actualizar</button>

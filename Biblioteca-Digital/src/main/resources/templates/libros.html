@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Biblioteca - Libros</title>
     <head th:replace="~{/fragments/head :: head}"></head>
@@ -65,25 +65,26 @@
                     <li th:text="'EJEMPLARES DISPONIBLES: ' + ${book.amountCopies}"></li>
                 </ul>
 
-                <div class="botones">
-                    <a class="btn btn-warning" th:href="@{'/book/view/' + ${book.id}}" role="button">Ver más</a>
+                <a class="btn btn-warning" th:href="@{'/book/view/' + ${book.id}}" role="button">Ver más</a>
 
-                    <a sec:authorize="hasRole('ADMIN')" th:if="${book.unsubscribe != null}"
+                <div sec:authorize="hasRole('ROLE_ADMIN')" class="botones">
+
+                    <a th:if="${book.unsubscribe != null}"
                        th:href="@{'/book/high/' + ${book.id}}" title="Dar de Alta">
-                        <i class="fa fa-arrow-up text-success"></i>
+                        <i class="fas fa-arrow-up text-success"></i>
                     </a>
 
-                    <a sec:authorize="hasRole('ADMIN')" th:unless="${book.unsubscribe != null}"
+                    <a th:unless="${book.unsubscribe != null}"
                        th:href="@{'/book/low/' + ${book.id}}" title="Dar de Baja">
-                        <i class="fa fa-arrow-down text-danger"></i>
+                        <i class="fas fa-arrow-down text-danger"></i>
                     </a>
 
-                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/book/update/' + ${book.id}}"
+                    <a th:href="@{'/book/update/' + ${book.id}}"
                        title="Modificar">
                         <i class="fas fa-feather-alt text-warning"></i>
                     </a>
 
-                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/book/delete/' + ${book.id}}"
+                    <a th:href="@{'/book/delete/' + ${book.id}}"
                        title="Eliminar">
                         <i class="fas fa-archive text-danger"></i>
                     </a>
