@@ -8,11 +8,11 @@
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
 <div>
-    <h1 class="text-center text-white">LIBROS DISPONIBLES</h1>
+    <h1>LIBROS DISPONIBLES</h1>
 </div>
 
 <!--FILTRAR-->
-<div class="dropdown text-center form-group2">
+<div class="dropdown text-center">
     <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
        aria-expanded="false">
         Filtrar por...
@@ -24,7 +24,7 @@
     </ul>
 </div>
 
-<div class="filtrar bg-dark text-white">
+<div class="filtrar">
     <div><h5>Buscar libro por titulo</h5></div>
     <div>
         <form action="/book" method="GET" enctype="multipart/form-data">
@@ -40,13 +40,13 @@
     </div>
 </div>
 
-<div sec:authorize="hasRole('ADMIN')" class="form-group2 centrar-boton text-center">
+<div sec:authorize="hasRole('ADMIN')" class="centrar-boton">
     <a href="/book/register" class="btn btn-dark" tabindex="-1" role="button">Agregar libro</a>
 </div>
 
 <div class="contenedor">
 
-    <div class="contenedorHijo" th:each="book : ${books}">
+    <div class="contenedor-hijo" th:each="book : ${books}">
 
         <div class="card">
 

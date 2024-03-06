@@ -68,12 +68,8 @@ public class Book {
     @ManyToOne(targetEntity = Author.class)
     @JoinColumn(name = "id_autor")
     private Author author;
-//    @OneToMany(targetEntity = Author.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "book")
-//    private List<Author> authors;
 
     @ManyToOne(targetEntity = Publisher.class)
     @JoinColumn(name = "id_editorial")
     private Publisher publisher;
-//    @OneToMany(targetEntity = Publisher.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "book")
-//    private List<Publisher> publishers;
 }

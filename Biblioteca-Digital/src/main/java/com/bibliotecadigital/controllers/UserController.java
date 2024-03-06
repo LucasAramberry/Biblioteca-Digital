@@ -4,7 +4,7 @@ import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.dto.UserDto;
 import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.enums.Gender;
-import com.bibliotecadigital.enums.Role;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.service.ICityService;
 import com.bibliotecadigital.service.IUserService;
 import jakarta.servlet.http.HttpSession;
@@ -16,10 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Lucas Aramberry
@@ -32,6 +30,24 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private ICityService cityService;
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public String users(ModelMap model, @RequestParam(required = false) String idUser) {
+
+        try {
+            List<User> userList = userService.findAll();
+            model.addAttribute("userList", userList);
+
+            if (idUser != null) {
+                model.put("users", (idUser.equalsIgnoreCase("todos")) ? userList : userService.findById(idUser));
+            }
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
+
+        return "usuarios.html";
+    }
 
     @GetMapping("/register")
     public String register(ModelMap model) {
@@ -56,10 +72,14 @@ public class UserController {
             return "registro.html";
         }
 
-        userService.register(userDto);
+        try {
+            userService.register(userDto);
 
-        model.addAttribute("titulo", "¡Bienvenido a Biblioteca Digital!");
-        model.addAttribute("descripcion", "Tu usuario fue registrado de manera satisfactoria.");
+            model.addAttribute("titulo", "¡Bienvenido a Biblioteca Digital!");
+            model.addAttribute("descripcion", "Tu usuario fue registrado de manera satisfactoria.");
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
 
         return "exito.html";
     }
@@ -80,6 +100,7 @@ public class UserController {
 
         model.addAttribute("user", UserDto
                 .builder()
+                .id(login.getId())
                 .name(login.getName())
                 .lastName(login.getLastName())
                 .dni(login.getDni())
@@ -89,11 +110,7 @@ public class UserController {
                 .idCity(login.getCity().getId())
                 .email(login.getEmail())
                 .password(login.getPassword())
-                .photoDto(PhotoDto
-                        .builder()
-                        .file((MultipartFile) login.getPhoto())
-                        .build()
-                )
+                .photoDto(PhotoDto.builder().build())
                 .build());
 
         return "perfil.html";
@@ -112,66 +129,66 @@ public class UserController {
             return "perfil.html";
         }
 
-        User login = (User) session.getAttribute("usersession");
-        if (login == null) {// || !login.getId().equals(id)
-            return "redirect:/";
+        try {
+            User login = (User) session.getAttribute("usersession");
+            if (login == null) {
+                return "redirect:/";
+            }
+
+            userService.update(userDto);
+
+            User user = userService.findById(login.getId());
+            session.setAttribute("usersession", user);
+
+        } catch (ErrorException e) {
+            e.getMessage();
         }
-
-        userService.update(login.getId(), userDto);
-
-        Optional<User> user = userService.findById(login.getId());
-        session.setAttribute("usersession", user.get());
 
         return "redirect:/";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/change-role")
-    public String changeRole(ModelMap model, @RequestParam String id) {
-        userService.changeRol(id);
-        return "redirect:/user";
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping("/low")
-    public String low(ModelMap model, @RequestParam String id) {
-        userService.low(id);
-        return "redirect:/user";
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/high")
-    public String high(ModelMap model, @RequestParam String id) {
-        userService.high(id);
-        return "redirect:/user";
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/delete")
-    public String delete(ModelMap model, @RequestParam String id) {
-        userService.delete(id);
-        return "redirect:/user";
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping("/users")
-    public String users(ModelMap model, @RequestParam(required = false) String idUser) {
-        model.put("rolAdmin", Role.ADMIN);
-        model.put("rolUser", Role.USER);
-
-        List<User> listUsers = userService.findAll();
-        model.addAttribute("userList", listUsers);
-
-        List<User> users = userService.findAll();
-        model.addAttribute("users", users);
-
-        model.addAttribute("userSelected", null);
-
-        if (idUser != null) {
-            Optional<User> user = userService.findById(idUser);
-            model.put("users", user.get());
-            model.addAttribute("userSelected", user);
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/change-role/{id}")
+    public String changeRole(ModelMap model, @PathVariable String id) {
+        try {
+            userService.changeRol(id);
+        } catch (ErrorException e) {
+            e.getMessage();
         }
-        return "usuarios.html";
+        return "redirect:/user";
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/low/{id}")
+    public String low(ModelMap model, @PathVariable String id) {
+        try {
+            userService.low(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
+        return "redirect:/user";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/high/{id}")
+    public String high(ModelMap model, @PathVariable String id) {
+        try {
+            userService.high(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
+        return "redirect:/user";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/delete/{id}")
+    public String delete(ModelMap model, @PathVariable String id) {
+        try {
+            userService.delete(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
+        return "redirect:/user";
+    }
+
 }

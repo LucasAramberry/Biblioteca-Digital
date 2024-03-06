@@ -14,6 +14,6 @@ public class CityDto {
 
     private Long id;
 
-    @NotBlank(message = "El nombre de la ciudad no puede ser nulo.")
+    @NotBlank(message = "Name of city cannot be null.")
     private String name;
 }

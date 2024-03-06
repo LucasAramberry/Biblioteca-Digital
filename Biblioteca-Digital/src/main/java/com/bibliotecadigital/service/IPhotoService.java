@@ -2,6 +2,7 @@ package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.entities.Photo;
+import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +11,11 @@ public interface IPhotoService {
 
     Photo register(PhotoDto photoDto);
 
-    Photo update(Long idFoto, PhotoDto photoDto);
+    Photo update(Long idFoto, PhotoDto photoDto) throws ErrorException;
 
     List<Photo> findAll();
 
-    Optional<Photo> findById(Long id);
+    Photo findById(Long id) throws ErrorException;
 
     void save(Photo photo);
 

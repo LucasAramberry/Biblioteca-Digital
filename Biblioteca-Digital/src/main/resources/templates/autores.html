@@ -8,12 +8,13 @@
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
 <!-- Created by Lucas Aramberry -->
-<div class="filtrar bg-dark text-white">
+<div class="filtrar">
     <div><h5>Buscar libro por Autor</h5></div>
     <div>
         <form action="/author" method="GET" enctype="multipart/form-data">
             <select class="filtrar-select" name="idAuthor">
                 <option selected disabled>Seleccionar</option>
+                <option>Todos</option>
                 <option th:each="author : ${authorsList}" th:value="${author.id}" th:text="${author.name}"></option>
             </select>
             <div class="filtrar-boton">
@@ -23,13 +24,13 @@
     </div>
 </div>
 
-<div sec:authorize="hasRole('ADMIN')" class="form-group2 centrar-boton text-center">
+<div sec:authorize="hasRole('ADMIN')" class="centrar-boton">
     <a href="/author/register" class="btn btn-dark" tabindex="-1" role="button">Agregar autor</a>
 </div>
 
 <div class="contenedor">
 
-    <div class="contenedorHijo" th:each="author : ${authors}">
+    <div class="contenedor-hijo" th:each="author : ${authors}">
 
         <div class="card">
 
@@ -75,12 +76,12 @@
 <!-- Created by Lucas Aramberry -->
 <div th:if="${books}" class="contenedor">
 
-    <div class="contenedorHijo" th:each="book : ${books}">
+    <div class="contenedor-hijo" th:each="book : ${books}">
 
         <div class="card">
 
             <div class="col-md-4 imagen-card">
-                <img th:src="@{'/photo/book/' + ${book.id}}" class="img-fluid rounded-start" alt="Portada">
+                <img th:src="@{'/photo/book/' + ${book.id}}" class="rounded-start" alt="Portada">
             </div>
 
             <div class="col-md-8 card-body">

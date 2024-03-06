@@ -2,6 +2,7 @@ package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.dto.PublisherDto;
 import com.bibliotecadigital.entities.Publisher;
+import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
 
@@ -9,26 +10,25 @@ public interface IPublisherService {
 
     void register(PublisherDto publisherDto);
 
-    void update(String id, PublisherDto publisherDto);
+    void update(String id, PublisherDto publisherDto) throws ErrorException;
 
-    void high(String id);
+    void high(String id) throws ErrorException;
 
-    void low(String id);
+    void low(String id) throws ErrorException;
 
-    void delete(String id);
+    void delete(String id) throws ErrorException;
 
-    public List<Publisher> findByActive();
+    List<Publisher> findByActive();
 
-    public List<Publisher> findByInactive();
+    List<Publisher> findByInactive();
 
-    public Publisher findByName(String name);
+    Publisher findByName(String name);
 
     List<Publisher> findAll();
 
-    Publisher findById(String id);
+    Publisher findById(String id) throws ErrorException;
 
     void save(Publisher publisher);
-
 
     void deleteById(String id);
 }

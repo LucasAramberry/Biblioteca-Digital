@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface ILoanDAO {
 
-    public List<Loan> findByUser(@Param("id") String id);
+    List<Loan> findByUser(@Param("id") String id);
 
-    public List<Loan> findByActive();
+    List<Loan> findByActive();
 
-    public List<Loan> findByInactive();
+    List<Loan> findByInactive();
 
     List<Loan> findAll();
 

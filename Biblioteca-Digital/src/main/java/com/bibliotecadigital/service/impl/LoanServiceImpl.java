@@ -3,10 +3,12 @@ package com.bibliotecadigital.service.impl;
 import com.bibliotecadigital.dto.LoanDto;
 import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.entities.Loan;
+import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.ILoanDAO;
 import com.bibliotecadigital.service.IBookService;
 import com.bibliotecadigital.service.ILoanService;
+import com.bibliotecadigital.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Lucas Aramberry
@@ -29,23 +30,7 @@ public class LoanServiceImpl implements ILoanService {
     @Autowired
     private IBookService bookService;
     @Autowired
-    private EmailServiceImpl emailServiceImpl;
-
-//    private void validar(Date fechaLoan, Date fechaDevolucion, Libro libro, Usuario usuario) throws ErrorServicio {
-//
-//        if (fechaLoan == null || fechaLoan.after(fechaDevolucion)) {
-//            throw new ErrorServicio("Fecha de loan invalida.");
-//        }
-//        if (fechaDevolucion == null || fechaDevolucion.before(fechaLoan) || fechaDevolucion.equals(fechaLoan)) {
-//            throw new ErrorServicio("Fecha de loan invalida.");
-//        }
-//        if (usuario == null) {
-//            throw new ErrorServicio("Usuario invalido.");
-//        }
-//        if (libro == null) {
-//            throw new ErrorServicio("Libro invalido.");
-//        }
-//    }
+    private IUserService userService;
 
     /**
      * Metodo para registrar un loan
@@ -56,14 +41,11 @@ public class LoanServiceImpl implements ILoanService {
     @Override
     public void register(LoanDto loanDto) throws ErrorException {
 
-        Optional<Book> book = bookService.findById(loanDto.getIdBook());
+        Book book = bookService.findById(loanDto.getIdBook());
+        User user = userService.findById(loanDto.getIdUser());
 
-        if (book.isPresent()) {
-            //realizar el seteo del ejemplar prestado en el libro
-            bookService.lendBook(book.get());
-        } else {
-            throw new ErrorException("Book is null");
-        }
+        //realiza el seteo del ejemplar prestado en el libro
+        bookService.lendBook(book);
 
         save(Loan
                 .builder()
@@ -71,57 +53,44 @@ public class LoanServiceImpl implements ILoanService {
                 .dateReturn(loanDto.getDateReturn())
                 .register(LocalDateTime.now())
                 .unsubscribe(null)
-                .book(book.get())
-                .user(loanDto.getUser())
-                .build());
+                .book(book)
+                .user(user)
+                .build()
+        );
 
-//        notificacionServicio.enviar("Realizaste el loan de un libro.", "Libreria web", usuario.getMail());
+        log.info("Create new Loan");
     }
 
     /**
      * Metodo para modificar un loan
      *
-     * @param id
      * @param loanDto
      */
     @Transactional
     @Override
-    public void update(Long id, LoanDto loanDto) throws ErrorException {
+    public void update(LoanDto loanDto) throws ErrorException {
 
-        Optional<Book> book = bookService.findById(loanDto.getIdBook());
+        Book book = bookService.findById(loanDto.getIdBook());
+        User user = userService.findById(loanDto.getIdUser());
 
-        if (!book.isPresent()) {
-            throw new ErrorException("Book is null");
+        Loan loan = findById(loanDto.getId());
+
+        loan.setDateLoan(loanDto.getDateLoan());
+        loan.setDateReturn(loanDto.getDateReturn());
+
+        if (loan.getBook() != book) {
+            //realizamos el seteo del ejemplar prestado en el libro nuevo
+            bookService.lendBook(book);
+            //devolvemos el ejemplar del libro que habiamos pedido
+            bookService.devolutionBook(loan.getBook());
+            loan.setBook(book);
         }
 
-        Optional<Loan> response = findById(id);
+        loan.setUser(user);
 
-        if (response.isPresent()) {
+        save(loan);
 
-            Loan loan = response.get();
-
-//            validar(fechaLoan, fechaDevolucion, libro, usuario);
-
-            loan.setDateLoan(loanDto.getDateLoan());
-            loan.setDateReturn(loanDto.getDateReturn());
-
-            if (loan.getBook() != book.get()) {
-                //realizamos el seteo del ejemplar prestado en el libro nuevo
-                bookService.lendBook(book.get());
-                //devolvemos el ejemplar del libro que habiamos pedido
-                bookService.devolutionBook(loan.getBook());
-                loan.setBook(book.get());
-            }
-
-            loan.setUser(loanDto.getUser());
-
-            save(loan);
-
-            log.info("Se actualizo un Loan");
-
-        } else {
-            log.error("No se encontro el loan solicitado para modificar.");
-        }
+        log.info("Update Loan");
     }
 
     /**
@@ -131,25 +100,19 @@ public class LoanServiceImpl implements ILoanService {
      */
     @Transactional
     @Override
-    public void delete(Long id) {
-        Optional<Loan> response = findById(id);
+    public void delete(Long id) throws ErrorException {
 
-        if (response.isPresent()) {
-            Loan loan = response.get();
+        Loan loan = findById(id);
 
-            //verificamos si el loan esta dado de alta ya que debemos devolver el ejemplar
-            // si esta de baja dando la baja automaticamente se devuelve el ejemplar del libro
-            if (loan.getUnsubscribe() == null) {
-                bookService.devolutionBook(loan.getBook());
-            }
-
-            loanDAO.delete(loan);
-
-            log.info("Se elimino un Loan");
-
-        } else {
-            log.error("No se encontro el loan solicitado para eliminar.");
+        //verificamos si el loan esta dado de alta ya que debemos devolver el ejemplar
+        // si esta de baja dando la baja automaticamente se devuelve el ejemplar del libro
+        if (loan.getUnsubscribe() == null) {
+            bookService.devolutionBook(loan.getBook());
         }
+
+        loanDAO.delete(loan);
+
+        log.info("Delete Loan with id " + id);
     }
 
     /**
@@ -160,24 +123,22 @@ public class LoanServiceImpl implements ILoanService {
     @Transactional
     @Override
     public void high(Long id) throws ErrorException {
-        Optional<Loan> response = loanDAO.findById(id);
 
-        if (response.isPresent()) {
-            Loan loan = response.get();
+        Loan loan = findById(id);
 
-            //chequeamos que la fecha de devolucion sea posterior a la actual para poder volver habilitar el loan
-            if (loan.getDateReturn().isAfter(LocalDate.now())) {
-                //realizamos el seteo del ejemplar prestado en el libro nuevo
-                bookService.lendBook(loan.getBook());
-            }
+        //chequeamos que la fecha de devolucion sea posterior a la actual para poder volver habilitar el loan
+        if (loan.getDateReturn().isAfter(LocalDate.now())) {
+
+            //realizamos el seteo del ejemplar prestado en el libro nuevo
+            bookService.lendBook(loan.getBook());
 
             loan.setUnsubscribe(null);
 
             save(loan);
 
-            log.info("Se dio de alta un Prestamo");
+            log.info("High Loan");
         } else {
-            log.error("No se encontro el prestamo solicitado para dar de alta.");
+            log.error("Error high loan with id " + id);
         }
     }
 
@@ -188,46 +149,34 @@ public class LoanServiceImpl implements ILoanService {
      */
     @Transactional
     @Override
-    public void low(Long id) {
-        Optional<Loan> response = findById(id);
+    public void low(Long id) throws ErrorException {
 
-        if (response.isPresent()) {
-            Loan loan = response.get();
+        Loan loan = findById(id);
 
-            //devolvemos el libro por deshabilitar el loan
-            bookService.devolutionBook(loan.getBook());
+        //devolvemos el libro por deshabilitar el loan
+        bookService.devolutionBook(loan.getBook());
 
-            loan.setUnsubscribe(LocalDateTime.now());
+        loan.setUnsubscribe(LocalDateTime.now());
 
-            save(loan);
+        save(loan);
 
-            log.info("Se dio de baja un prestamo");
-        } else {
-            log.error("No se encontro el prestamo solicitado para dar de baja.");
-        }
+        log.info("Low Loan with id " + id);
     }
 
     @Transactional
     @Override
-    public void devolution(Long id) {
+    public void devolution(Long id) throws ErrorException {
 
-        Optional<Loan> response = findById(id);
+        Loan loan = findById(id);
 
-        if (response.isPresent()) {
+        loan.setDateReturn(LocalDate.now());
 
-            Loan loan = response.get();
-            loan.setDateReturn(LocalDate.now());
+        //devolvemos el libro por deshabilitar el loan
+        bookService.devolutionBook(loan.getBook());
 
-            //devolvemos el libro por deshabilitar el loan
-            bookService.devolutionBook(loan.getBook());
+        save(loan);
 
-            loanDAO.save(loan);
-
-            log.info("Se devolvio un prestamo");
-
-        } else {
-            log.error("No se encontro el prestamo solicitado para dar de devolver.");
-        }
+        log.info("Devolution Loan");
     }
 
     @Override
@@ -251,8 +200,8 @@ public class LoanServiceImpl implements ILoanService {
     }
 
     @Override
-    public Optional<Loan> findById(Long id) {
-        return loanDAO.findById(id);
+    public Loan findById(Long id) throws ErrorException {
+        return loanDAO.findById(id).orElseThrow(() -> new ErrorException("The loan with id " + id + " was not found."));
     }
 
     @Override

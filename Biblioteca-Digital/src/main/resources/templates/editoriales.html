@@ -8,7 +8,7 @@
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
 <!-- Created by Lucas Aramberry -->
-<div class="filtrar bg-dark text-white">
+<div class="filtrar">
 
     <div><h5>Buscar libro por Editorial</h5></div>
     <div>
@@ -26,14 +26,14 @@
     </div>
 </div>
 
-<div sec:authorize="hasRole('ADMIN')" class="form-group2 centrar-boton text-center">
+<div sec:authorize="hasRole('ADMIN')" class="centrar-boton">
     <a href="/publisher/register" class="btn btn-dark" tabindex="-1" role="button">Agregar editorial</a>
 </div>
 
 <!-- Created by Lucas Aramberry -->
 <div class="contenedor">
 
-    <div class="contenedorHijo" th:each="publisher : ${publishers}">
+    <div class="contenedor-hijo" th:each="publisher : ${publishers}">
 
         <div class="card">
 
@@ -80,12 +80,12 @@
 <!-- Created by Lucas Aramberry -->
 <div th:if="${books}" class="contenedor">
 
-    <div class="contenedorHijo" th:each="book : ${books}">
+    <div class="contenedor-hijo" th:each="book : ${books}">
 
         <div class="card">
 
             <div class="col-md-4 imagen-card">
-                <img th:src="@{'/photo/book/' + ${book.id}}" class="img-fluid rounded-start" alt="Portada">
+                <img th:src="@{'/photo/book/' + ${book.id}}" class="rounded-start" alt="Portada">
             </div>
 
             <div class="col-md-8 card-body">

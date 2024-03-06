@@ -2,6 +2,7 @@ package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.entities.Photo;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IPhotoDAO;
 import com.bibliotecadigital.service.IPhotoService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Lucas Aramberry
@@ -40,47 +40,36 @@ public class PhotoServiceImpl implements IPhotoService {
 
                 save(photo);
 
-                log.info("Se creo una foto");
+                log.info("Create new Photo");
 
                 return photo;
             } catch (IOException ex) {
-                log.error("Ocurrió un error al procesar la foto: ", ex.getMessage());
+                log.error("An error occurred while processing the photo: ", ex.getMessage());
             }
+
         }
         return null;
     }
 
     @Transactional
     @Override
-    public Photo update(Long idFoto, PhotoDto photoDto) {
+    public Photo update(Long idFoto, PhotoDto photoDto) throws ErrorException {
 
         if (!photoDto.getFile().isEmpty() && photoDto.getFile() != null) {
-
             try {
 
-                Photo photo = new Photo();
-
-                if (idFoto != null) {
-
-                    Optional<Photo> respuesta = findById(idFoto);
-                    if (respuesta.isPresent()) {
-                        photo = respuesta.get();
-                    }
-
-                }
-
+                Photo photo = findById(idFoto);
                 photo.setName(photoDto.getFile().getName());
                 photo.setMime(photoDto.getFile().getContentType());
                 photo.setContent(photoDto.getFile().getBytes());
 
                 save(photo);
 
-                log.info("Se actualizo una foto");
+                log.info("Update Photo");
 
                 return photo;
-
             } catch (IOException ex) {
-                log.error("Ocurrió un error al actualizar la foto: ", ex.getMessage());
+                log.error("An error occurred while update the photo: ", ex.getMessage());
             }
         }
         return null;
@@ -95,8 +84,8 @@ public class PhotoServiceImpl implements IPhotoService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Photo> findById(Long id) {
-        return iPhotoDAO.findById(id);
+    public Photo findById(Long id) throws ErrorException {
+        return iPhotoDAO.findById(id).orElseThrow(() -> new ErrorException("The photo with id " + id + " was not found."));
     }
 
     @Transactional

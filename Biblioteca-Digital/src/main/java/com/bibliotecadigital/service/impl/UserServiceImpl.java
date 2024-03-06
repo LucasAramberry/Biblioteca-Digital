@@ -1,10 +1,10 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.dto.UserDto;
-import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.enums.Role;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IUserDAO;
 import com.bibliotecadigital.service.ICityService;
 import com.bibliotecadigital.service.IPhotoService;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Lucas Aramberry
@@ -32,9 +31,6 @@ public class UserServiceImpl implements IUserService {
     private ICityService cityService;
     @Autowired
     private IPhotoService photoService;
-    @Autowired
-    private EmailServiceImpl emailService;
-
 
     /**
      * Metodo para registrar user
@@ -43,15 +39,7 @@ public class UserServiceImpl implements IUserService {
      */
     @Transactional
     @Override
-    public void register(UserDto userDto) {
-
-        Optional<City> city = cityService.findById(userDto.getIdCity());//.orElseThrow(() -> new Exception("City not exist"))
-
-        Photo photo = null;
-
-        if (!userDto.getPhotoDto().getFile().isEmpty()) {
-            photo = photoService.register(userDto.getPhotoDto());
-        }
+    public void register(UserDto userDto) throws ErrorException {
 
         save(User
                 .builder()
@@ -61,54 +49,49 @@ public class UserServiceImpl implements IUserService {
                 .gender(userDto.getGender())
                 .phone(userDto.getPhone())
                 .role(Role.USER)
-                .city(((city.get() != null) ? city.get() : null))
+                .city(cityService.findById(userDto.getIdCity()))
                 .email(userDto.getEmail())
                 .password(new BCryptPasswordEncoder().encode(userDto.getPassword()))
                 .register(LocalDateTime.now())
-                .photo(photo)
-                .build());
+                .photo(photoService.register(userDto.getPhotoDto()))
+                .build()
+        );
 
-//        notificacionServicio.enviar("Bienvenidos a la Libreria!", "Libreria web", user.getMail());
+        log.info("Create new User");
     }
 
     /**
      * Metodo para modificar user
      *
-     * @param id
      * @param userDto
      */
     @Transactional
     @Override
-    public void update(String id, UserDto userDto) {
+    public void update(UserDto userDto) throws ErrorException {
 
-        Optional<User> response = findById(id);
+        User user = findById(userDto.getId());
 
-        if (response.isPresent()) {
-            User user = response.get();
+        user.setName(userDto.getName());
+        user.setLastName(userDto.getLastName());
+        user.setDni(userDto.getDni());
+        user.setPhone(userDto.getPhone());
+        user.setGender(userDto.getGender());
+        user.setCity(((user.getCity().getId().equals(userDto.getIdCity())) ? user.getCity() : cityService.findById(userDto.getIdCity())));
+        user.setEmail(userDto.getEmail());
+        user.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
 
-            user.setName(userDto.getName());
-            user.setLastName(userDto.getLastName());
-            user.setDni(userDto.getDni());
-            user.setPhone(userDto.getPhone());
-            user.setGender(userDto.getGender());
-
-            Optional<City> city = cityService.findById(userDto.getIdCity());
-            user.setCity(((city.get() != null) ? city.get() : null));
-
-            user.setEmail(userDto.getEmail());
-
-            user.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
-
-            if (user.getPhoto() != null && !userDto.getPhotoDto().getFile().isEmpty()) {
-                Photo photo = photoService.update(user.getPhoto().getId(), userDto.getPhotoDto());
-                user.setPhoto(photo);
-            }
-
-            save(user);
-
-        } else {
-            log.error("No se encontro el usuario solicitado para modificar.");
+        Photo photo = null;
+        if (user.getPhoto() != null && !userDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.update(user.getPhoto().getId(), userDto.getPhotoDto());
+        } else if (user.getPhoto() == null && !userDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.register(userDto.getPhotoDto());
         }
+
+        user.setPhoto(photo);
+
+        save(user);
+
+        log.info("Update User");
     }
 
     /**
@@ -118,16 +101,10 @@ public class UserServiceImpl implements IUserService {
      */
     @Transactional
     @Override
-    public void delete(String id) {
-
-        Optional<User> response = findById(id);
-
-        if (response.isPresent()) {
-            User user = response.get();
-            userDAO.delete(user);
-        } else {
-            log.error("No se encontro el usuario solicitado para eliminar.");
-        }
+    public void delete(String id) throws ErrorException {
+        User user = findById(id);
+        delete(user);
+        log.info("Delete User with id " + id);
     }
 
     /**
@@ -137,17 +114,11 @@ public class UserServiceImpl implements IUserService {
      */
     @Transactional
     @Override
-    public void high(String id) {
-        Optional<User> response = findById(id);
-
-        if (response.isPresent()) {
-            User user = response.get();
-            user.setUnsubscribe(null);
-
-            save(user);
-        } else {
-            log.error("Error al habilitar el usuario solicitado");
-        }
+    public void high(String id) throws ErrorException {
+        User user = findById(id);
+        user.setUnsubscribe(null);
+        save(user);
+        log.info("High User");
     }
 
     /**
@@ -157,36 +128,26 @@ public class UserServiceImpl implements IUserService {
      */
     @Transactional
     @Override
-    public void low(String id) {
-        Optional<User> response = findById(id);
-
-        if (response.isPresent()) {
-            User user = response.get();
-            user.setUnsubscribe(LocalDateTime.now());
-
-            save(user);
-        } else {
-            log.error("Error al deshabilitar el usuario solicitado");
-        }
+    public void low(String id) throws ErrorException {
+        User user = findById(id);
+        user.setUnsubscribe(LocalDateTime.now());
+        save(user);
+        log.info("Low User with id " + id);
     }
 
     @Transactional
     @Override
-    public void changeRol(String id) {
-        Optional<User> response = findById(id);
+    public void changeRol(String id) throws ErrorException {
+        User user = findById(id);
 
-        if (response.isPresent()) {
-            User user = response.get();
-            if (user.getRole().equals(Role.ADMIN)) {
-                user.setRole(Role.USER);
-            } else {
-                user.setRole(Role.ADMIN);
-            }
-
-            save(user);
+        if (user.getRole().equals(Role.ADMIN)) {
+            user.setRole(Role.USER);
         } else {
-            log.error("Error al cambiar el rol del user solicitado");
+            user.setRole(Role.ADMIN);
         }
+        save(user);
+
+        log.error("Error change rol user with id " + id);
     }
 
     @Override
@@ -210,8 +171,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<User> findById(String id) {
-        return userDAO.findById(id);
+    public User findById(String id) throws ErrorException {
+        return userDAO.findById(id).orElseThrow(() -> new ErrorException("The user with id " + id + " was not found."));
     }
 
     @Override

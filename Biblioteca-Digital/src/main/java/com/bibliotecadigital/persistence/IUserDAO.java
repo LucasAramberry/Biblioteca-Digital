@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface IUserDAO {
 
-    public User findByEmail(String email);
+    User findByEmail(String email);
 
-    public List<User> findByActive();
+    List<User> findByActive();
 
-    public List<User> findByInactive();
+    List<User> findByInactive();
 
     List<User> findAll();
 

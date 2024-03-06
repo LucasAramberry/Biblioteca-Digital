@@ -25,6 +25,11 @@ h1 {
 
 a{
     text-decoration: none;
+    color: white;
+}
+
+a:hover{
+    color: rgb(114, 114, 114);
 }
 
 ul{
@@ -61,6 +66,17 @@ ul{
     margin: 0.5rem;
 }
 
+.botones-book-card{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+}
+
+.botones-book-card a{
+    margin: 0.5rem;
+}
+
 .fa-arrow-left {
     font-size: 1.5rem;
     color: #fff;
@@ -83,7 +99,7 @@ ul{
 
 .t-shadow-halftone::after {
 
-    content: "¡Bienvenido a la Libreria!";
+    content: "¡Bienvenido a Biblioteca Digital!";
     letter-spacing: 0px;
     -webkit-text-fill-color: transparent;
     -moz-text-fill-color: transparent;
@@ -101,10 +117,13 @@ ul{
 }
 
 .centrar-boton{
+    text-align: center;
     margin: 0.2rem;
 }
 
 .centrar{
+    color: #f8f9fa;
+    text-align: center;
     margin: 8rem auto;
 }
 
@@ -118,13 +137,10 @@ ul{
     margin-bottom: 1rem;
 }
 
-.enlacesSub{
-    margin: 1.5rem 0rem;
-}
-
 .enlaces-sub{
     text-decoration: none;
     color: white;
+    margin: 1.5rem 0rem;
 }
 
 .enlaces-sub:hover{
@@ -143,14 +159,14 @@ ul{
 
 .contenedor{
     display: flex;
-    /*flex-direction: column;*/
-    flex-wrap: wrap;/*si activamos este desactivas el colum*/
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     margin-bottom: 5rem;
+    padding: 1rem;
 }
 
-.contenedorHijo{
+.contenedor-hijo{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -235,7 +251,7 @@ footer {
     list-style: none;
 }
 
-.liFooter{
+footer ul li{
     display: flex;
     justify-content: space-around;
     padding-left: 0.5rem;
@@ -243,10 +259,6 @@ footer {
     color: #fff;
     font-weight: lighter;
     font-size: smaller;
-}
-
-.liFooter:hover{
-    color: rgb(114, 114, 114);
 }
 
 button{
@@ -261,18 +273,20 @@ li:hover{
 
 .filtrar{
     width: 400px;
-    height: 125px;
+    height: 140px;
     text-align: center;
-    border-style: double;
-    border-color: #212529;
+    background-color: #212529;
+    color: #fff;
+    border: none;
+    padding: 0.5rem;
     margin: 1% auto;
-    margin-bottom: 1rem;
 }
 
 .filtrar-select{
     margin: 1% auto;
     width: 300px;
-    height: 30px
+    height: 30px;
+    border-radius: 0.2rem;
 }
 
 .filtrar-boton{
@@ -281,14 +295,7 @@ li:hover{
 
 /***********************************ESTILOS PAGINA LIBRO*****************************************/
 
-.contenedor1{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 5rem;
-    padding: 1rem;
-}
-
-.img-fluid1{
+.img-fluid{
     width: 13.5rem;
     height: 20rem;
 }
@@ -305,8 +312,7 @@ li:hover{
 }
 
 .card-prestamo{
-    /*    display: flex;
-        justify-content: space-around;*/
+    text-align: center;
     margin: 2% auto;
 }
 
@@ -318,11 +324,6 @@ li:hover{
     display: flex;
     justify-content: center;
     margin: 2% auto;
-}
-
-.inputFecha {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
 }
 
 .card-title1{

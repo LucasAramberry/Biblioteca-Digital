@@ -14,7 +14,7 @@ public class AuthorDto {
 
     private String id;
 
-    @NotBlank(message = "El nombre del autor no puede ser nulo.")
+    @NotBlank(message = "Name of author cannot be null.")
     private String name;
 
     private PhotoDto photoDto;

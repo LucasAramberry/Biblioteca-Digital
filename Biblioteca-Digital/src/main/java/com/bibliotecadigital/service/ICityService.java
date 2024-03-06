@@ -1,6 +1,7 @@
 package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.entities.City;
+import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,7 @@ public interface ICityService {
 
     List<City> findAll();
 
-    Optional<City> findById(Long id);
+    City findById(Long id) throws ErrorException;
 
     void save(City city);
 

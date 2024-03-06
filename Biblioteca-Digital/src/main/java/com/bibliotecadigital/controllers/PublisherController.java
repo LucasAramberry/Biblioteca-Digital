@@ -5,6 +5,7 @@ import com.bibliotecadigital.dto.PublisherDto;
 import com.bibliotecadigital.entities.Publisher;
 import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.enums.Role;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.service.IBookService;
 import com.bibliotecadigital.service.IPublisherService;
 import jakarta.servlet.http.HttpSession;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -34,22 +34,27 @@ public class PublisherController {
     @GetMapping
     public String publishers(ModelMap model, HttpSession session, @RequestParam(required = false) String idPublisher) {
 
-        List<Publisher> publisherList;
+        try {
+            List<Publisher> publisherList;
 
-        User userLogin = (User) session.getAttribute("usersession");
-        if (userLogin != null && userLogin.getRole().equals(Role.ADMIN)) {
-            publisherList = publisherService.findAll();
-        } else {
-            publisherList = publisherService.findByActive();
-        }
+            User userLogin = (User) session.getAttribute("usersession");
+            if (userLogin != null && userLogin.getRole().equals(Role.ADMIN)) {
+                publisherList = publisherService.findAll();
+            } else {
+                publisherList = publisherService.findByActive();
+            }
 
-        model.addAttribute("publisherList", publisherList);
+            model.addAttribute("publisherList", publisherList);
 
-        if (idPublisher != null) {
-            model.addAttribute("books", bookService.findByPublisher(idPublisher));
-            model.addAttribute("publishers", publisherService.findById(idPublisher));
-        } else {
-            model.addAttribute("publishers", publisherList.stream().toList());
+            if (idPublisher != null) {
+                model.addAttribute("books", bookService.findByPublisher(idPublisher));
+                model.addAttribute("publishers", publisherService.findById(idPublisher));
+            } else {
+                model.addAttribute("publishers", publisherList.stream().toList());
+            }
+
+        } catch (ErrorException e) {
+            e.getMessage();
         }
 
         return "editoriales.html";
@@ -83,22 +88,24 @@ public class PublisherController {
     @GetMapping("/update/{id}")
     public String updatePublisher(ModelMap model, @PathVariable String id) {
 
-        Publisher publisher = publisherService.findById(id);
+        try {
+            Publisher publisher = null;
+            publisher = publisherService.findById(id);
 
-        if (publisher != null) {
-            PublisherDto publisherDto = PublisherDto
-                    .builder()
-                    .id(publisher.getId())
-                    .name(publisher.getName())
-                    .photoDto(PhotoDto
-                            .builder()
-                            .file((MultipartFile) publisher.getPhoto())
-                            .build())
-                    .build();
+            if (publisher != null) {
+                PublisherDto publisherDto = PublisherDto
+                        .builder()
+                        .id(publisher.getId())
+                        .name(publisher.getName())
+                        .photoDto(PhotoDto.builder().build())
+                        .build();
 
-            model.addAttribute("publisher", publisherDto);
+                model.addAttribute("publisher", publisherDto);
 
-            return "modificar-editorial.html";
+                return "modificar-editorial.html";
+            }
+        } catch (ErrorException e) {
+            e.getMessage();
         }
 
         return "redirect:/publisher";
@@ -108,40 +115,51 @@ public class PublisherController {
     @PostMapping("/update")
     public String updatePublisher(ModelMap model, @ModelAttribute(name = "publisher") @Valid PublisherDto publisherDto, BindingResult result) {
 
-        if (result.hasErrors()) {
-            model.addAttribute("publisher", publisherDto);
-            return "modificar-editorial.html";
+        try {
+            if (result.hasErrors()) {
+                model.addAttribute("publisher", publisherDto);
+                return "modificar-editorial.html";
+            }
+
+            publisherService.update(publisherDto.getId(), publisherDto);
+
+        } catch (ErrorException e) {
+            e.getMessage();
         }
 
-        publisherService.update(publisherDto.getId(), publisherDto);
         return "redirect:/publisher";
-
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/low/{id}")
     public String low(ModelMap model, @PathVariable String id) {
-
-        publisherService.low(id);
+        try {
+            publisherService.low(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/publisher";
-
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/high/{id}")
     public String high(ModelMap model, @PathVariable String id) {
-
-        publisherService.high(id);
+        try {
+            publisherService.high(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/publisher";
-
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/delete/{id}")
     public String delete(ModelMap model, @PathVariable String id) {
-
-        publisherService.delete(id);
+        try {
+            publisherService.delete(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/publisher";
-
     }
 }

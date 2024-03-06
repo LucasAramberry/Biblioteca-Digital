@@ -1,7 +1,5 @@
 package com.bibliotecadigital.dto;
 
-import com.bibliotecadigital.entities.Book;
-import com.bibliotecadigital.entities.User;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -27,5 +25,6 @@ public class LoanDto {
     @NotBlank(message = "The book cannot be null.")
     private String idBook;
 
-    private User user;
+//    @NotBlank(message = "The user cannot be null.")
+    private String idUser;
 }

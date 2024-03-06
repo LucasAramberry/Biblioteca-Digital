@@ -3,6 +3,7 @@ package com.bibliotecadigital.service.impl;
 import com.bibliotecadigital.dto.PublisherDto;
 import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.entities.Publisher;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IPublisherDAO;
 import com.bibliotecadigital.service.IPhotoService;
 import com.bibliotecadigital.service.IPublisherService;
@@ -35,16 +36,14 @@ public class PublisherServiceImpl implements IPublisherService {
     @Override
     public void register(PublisherDto publisherDto) {
 
-        Photo photo = photoService.register(publisherDto.getPhotoDto());
-
         save(Publisher
                 .builder()
                 .name(publisherDto.getName())
                 .register(LocalDateTime.now())
-                .photo(photo)
+                .photo(photoService.register(publisherDto.getPhotoDto()))
                 .build());
 
-        log.info("Se registro una nuevo Editorial");
+        log.info("Create new Publisher");
     }
 
     /**
@@ -55,31 +54,23 @@ public class PublisherServiceImpl implements IPublisherService {
      */
     @Transactional
     @Override
-    public void update(String id, PublisherDto publisherDto) {
+    public void update(String id, PublisherDto publisherDto) throws ErrorException {
 
         Publisher publisher = findById(id);
 
-        if (publisher != null) {
+        publisher.setName(publisherDto.getName());
 
-            publisher.setName(publisherDto.getName());
-
-            Long idFoto = null;
-
-            if (publisher.getPhoto() != null) {
-                idFoto = publisher.getPhoto().getId();
-            }
-
-            Photo photo = photoService.update(idFoto, publisherDto.getPhotoDto());
-
-            publisher.setPhoto(photo);
-
-            save(publisher);
-
-            log.info("Se actualizo una Editorial");
-
-        } else {
-            log.error("No se encontro la editorial solicitado para modificar.");
+        Photo photo = null;
+        if (publisher.getPhoto() != null && !publisherDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.update(publisher.getPhoto().getId(), publisherDto.getPhotoDto());
+        } else if (publisher.getPhoto() == null && !publisherDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.register(publisherDto.getPhotoDto());
         }
+        publisher.setPhoto(photo);
+
+        save(publisher);
+
+        log.info("Update Publisher");
     }
 
     /**
@@ -88,21 +79,14 @@ public class PublisherServiceImpl implements IPublisherService {
      * @param id
      */
     @Transactional
-    public void high(String id) {
+    @Override
+    public void high(String id) throws ErrorException {
 
         Publisher publisher = findById(id);
+        publisher.setUnsubscribe(null);
+        save(publisher);
 
-        if (publisher != null) {
-
-            publisher.setUnsubscribe(null);
-
-            save(publisher);
-
-            log.info("Se dio de alta una Editorial");
-
-        } else {
-            log.error("No se encontro la editorial solicitado para dar de alta.");
-        }
+        log.info("High publisher");
     }
 
 
@@ -112,21 +96,14 @@ public class PublisherServiceImpl implements IPublisherService {
      * @param id
      */
     @Transactional
-    public void low(String id) {
+    @Override
+    public void low(String id) throws ErrorException {
 
         Publisher publisher = findById(id);
+        publisher.setUnsubscribe(LocalDateTime.now());
+        save(publisher);
 
-        if (publisher != null) {
-
-            publisher.setUnsubscribe(LocalDateTime.now());
-
-            save(publisher);
-
-            log.info("Se dio de baja una Editorial");
-
-        } else {
-            log.error("No se encontro la editorial solicitado para dar de baja.");
-        }
+        log.info("Low Publisher with id " + id);
     }
 
     /**
@@ -136,19 +113,12 @@ public class PublisherServiceImpl implements IPublisherService {
      */
     @Transactional
     @Override
-    public void delete(String id) {
+    public void delete(String id) throws ErrorException {
 
         Publisher publisher = findById(id);
+        publisherDAO.delete(publisher);
 
-        if (publisher != null) {
-
-            publisherDAO.delete(publisher);
-
-            log.info("Se elimino una Editorial");
-
-        } else {
-            log.error("No se encontro la editorial solicitado para eliminar.");
-        }
+        log.info("Delete Publisher with id " + id);
     }
 
     /**
@@ -198,8 +168,8 @@ public class PublisherServiceImpl implements IPublisherService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Publisher findById(String id) {
-        return publisherDAO.findById(id).orElse(null);
+    public Publisher findById(String id) throws ErrorException {
+        return publisherDAO.findById(id).orElseThrow(() -> new ErrorException("The publisher with id " + id + " was not found."));
     }
 
     @Transactional

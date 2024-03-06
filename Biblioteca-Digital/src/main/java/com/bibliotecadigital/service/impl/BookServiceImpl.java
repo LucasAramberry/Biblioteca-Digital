@@ -6,6 +6,7 @@ import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IBookDAO;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IBookService;
+import com.bibliotecadigital.service.IPhotoService;
 import com.bibliotecadigital.service.IPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Lucas Aramberry
@@ -30,7 +30,7 @@ public class BookServiceImpl implements IBookService {
     @Autowired
     private IPublisherService publisherService;
     @Autowired
-    private PhotoServiceImpl photoService;
+    private IPhotoService photoService;
 
     /**
      * Metodo para registrar book
@@ -39,13 +39,10 @@ public class BookServiceImpl implements IBookService {
      */
     @Transactional
     @Override
-    public void register(BookDto bookDto) {
+    public void register(BookDto bookDto) throws ErrorException {
 
         Author author = authorService.findById(bookDto.getIdAuthor());
-
         Publisher publisher = publisherService.findById(bookDto.getIdPublisher());
-
-        Photo photo = photoService.register(bookDto.getPhotoDto());
 
         save(Book
                 .builder()
@@ -58,60 +55,51 @@ public class BookServiceImpl implements IBookService {
                 .amountCopiesBorrowed(bookDto.getAmountCopiesBorrowed())
                 .amountCopiesRemaining((bookDto.getAmountCopies() - bookDto.getAmountCopiesBorrowed()))
                 .register(LocalDateTime.now())
-                .author(((author != null) ? author : null))
-                .publisher(((publisher != null) ? publisher : null))
-                .photo(photo)
+                .author(author)
+                .publisher(publisher)
+                .photo(photoService.register(bookDto.getPhotoDto()))
                 .build()
         );
+
+        log.info("Create Book");
     }
 
     /**
      * metodo para modificar book
      *
-     * @param id
      * @param bookDto
      */
     @Transactional
     @Override
-    public void update(String id, BookDto bookDto) {
+    public void update(BookDto bookDto) throws ErrorException {
 
-        Optional<Book> response = bookDAO.findById(id);
+        Book book = findById(bookDto.getId());
 
-        if (response.isPresent()) {
+        book.setIsbn(bookDto.getIsbn());
+        book.setTitle(bookDto.getTitle());
+        book.setDescription(bookDto.getDescription());
+        book.setDatePublisher(bookDto.getDatePublisher());
+        book.setAmountPages(bookDto.getAmountPages());
+        book.setAmountCopies(bookDto.getAmountCopies());
+        book.setAmountCopiesBorrowed(bookDto.getAmountCopiesBorrowed());
 
-            Book book = response.get();
+        //validar que no sean menos los totales q los prestados
+        book.setAmountCopiesRemaining(bookDto.getAmountCopies() - bookDto.getAmountCopiesBorrowed());
 
-            Author author = authorService.findById(bookDto.getIdAuthor());
+        book.setAuthor(((book.getAuthor().getId() != bookDto.getIdAuthor()) ? authorService.findById(bookDto.getIdAuthor()) : book.getAuthor()));
+        book.setPublisher(((book.getPublisher().getId() != bookDto.getIdPublisher()) ? publisherService.findById(bookDto.getIdPublisher()) : book.getPublisher()));
 
-            Publisher publisher = publisherService.findById(bookDto.getIdPublisher());
-
-            book.setIsbn(bookDto.getIsbn());
-            book.setTitle(bookDto.getTitle());
-            book.setDescription(bookDto.getDescription());
-            book.setDatePublisher(bookDto.getDatePublisher());
-            book.setAmountPages(bookDto.getAmountPages());
-            book.setAmountCopies(bookDto.getAmountCopies());
-            book.setAmountCopiesBorrowed(bookDto.getAmountCopiesBorrowed());
-            //validar que no sean menos los totales q los prestados
-            book.setAmountCopiesRemaining(bookDto.getAmountCopies() - bookDto.getAmountCopiesBorrowed());
-            book.setAuthor(((author != null) ? author : null));
-            book.setPublisher(((publisher != null) ? publisher : null));
-
-            Long idPhoto = null;
-
-            if (book.getPhoto() != null) {
-                idPhoto = book.getPhoto().getId();
-            }
-
-            Photo photo = photoService.update(idPhoto, bookDto.getPhotoDto());
-
-            book.setPhoto(photo);
-
-            save(book);
-
-        } else {
-            log.error("No se encontro el libro solicitado para modificar.");
+        Photo photo = null;
+        if (book.getPhoto() != null && !bookDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.update(book.getPhoto().getId(), bookDto.getPhotoDto());
+        } else if (book.getPhoto() == null && !bookDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.register(bookDto.getPhotoDto());
         }
+        book.setPhoto(photo);
+
+        save(book);
+
+        log.info("Update Book");
     }
 
     /**
@@ -121,17 +109,12 @@ public class BookServiceImpl implements IBookService {
      */
     @Transactional
     @Override
-    public void delete(String id) {
+    public void delete(String id) throws ErrorException {
 
-        Optional<Book> response = findById(id);
+        Book book = findById(id);
+        delete(book);
 
-        if (response.isPresent()) {
-            Book book = response.get();
-            bookDAO.delete(book);
-
-        } else {
-            log.error("No se encontro el libro solicitado para eliminar.");
-        }
+        log.info("Delete Book with id " + id);
     }
 
     /**
@@ -141,17 +124,13 @@ public class BookServiceImpl implements IBookService {
      */
     @Transactional
     @Override
-    public void high(String id) {
-        Optional<Book> response = bookDAO.findById(id);
+    public void high(String id) throws ErrorException {
 
-        if (response.isPresent()) {
-            Book book = response.get();
-            book.setUnsubscribe(null);
+        Book book = findById(id);
+        book.setUnsubscribe(null);
+        save(book);
 
-            bookDAO.save(book);
-        } else {
-            log.error("Error al habilitar el libro solicitado.");
-        }
+        log.info("High Author");
     }
 
     /**
@@ -161,17 +140,13 @@ public class BookServiceImpl implements IBookService {
      */
     @Transactional
     @Override
-    public void low(String id) {
-        Optional<Book> response = bookDAO.findById(id);
+    public void low(String id) throws ErrorException {
 
-        if (response.isPresent()) {
-            Book book = response.get();
-            book.setUnsubscribe(LocalDateTime.now());
+        Book book = findById(id);
+        book.setUnsubscribe(LocalDateTime.now());
+        save(book);
 
-            bookDAO.save(book);
-        } else {
-            log.error("Error al deshabilitar el libro solicitado.");
-        }
+        log.info("Low Book with id " + id);
     }
 
     /**
@@ -182,16 +157,13 @@ public class BookServiceImpl implements IBookService {
     @Transactional
     @Override
     public void lendBook(Book book) throws ErrorException {
-        if (book != null) {
-            if (book.getAmountCopiesBorrowed() >= 1) {
-                book.setAmountCopiesBorrowed(book.getAmountCopiesBorrowed() + 1);
-                book.setAmountCopiesRemaining(book.getAmountCopiesRemaining() - 1);
-                bookDAO.save(book);
-            } else {
-                throw new ErrorException("El book ingresado no tiene suficientes ejemplares disponibles para realizar el préstamo.");
-            }
+        if (book.getAmountCopiesBorrowed() >= 1) {
+            book.setAmountCopiesBorrowed(book.getAmountCopiesBorrowed() + 1);
+            book.setAmountCopiesRemaining(book.getAmountCopiesRemaining() - 1);
+            save(book);
+            log.info("Book lend");
         } else {
-            log.error("El book no esta disponible");
+            throw new ErrorException("The book entered does not have enough copies available to make the loan.");
         }
     }
 
@@ -203,13 +175,10 @@ public class BookServiceImpl implements IBookService {
     @Transactional
     @Override
     public void devolutionBook(Book book) {
-        if (book != null) {
-            book.setAmountCopiesBorrowed(book.getAmountCopiesBorrowed() - 1);
-            book.setAmountCopiesRemaining(book.getAmountCopiesRemaining() + 1);
-            save(book);
-        } else {
-            log.error("Error al devolver el book.");
-        }
+        book.setAmountCopiesBorrowed(book.getAmountCopiesBorrowed() - 1);
+        book.setAmountCopiesRemaining(book.getAmountCopiesRemaining() + 1);
+        save(book);
+        log.info("Book devolution");
     }
 
     @Override
@@ -238,8 +207,8 @@ public class BookServiceImpl implements IBookService {
     }
 
     @Override
-    public Optional<Book> findById(String id) {
-        return bookDAO.findById(id);
+    public Book findById(String id) throws ErrorException {
+        return bookDAO.findById(id).orElseThrow(() -> new ErrorException("The book with id " + id + " was not found."));
     }
 
     @Override

@@ -5,19 +5,18 @@ import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IBookService {
 
-    void register(BookDto bookDto);
+    void register(BookDto bookDto) throws ErrorException;
 
-    void update(String id, BookDto bookDto);
+    void update(BookDto bookDto) throws ErrorException;
 
-    void delete(String id);
+    void delete(String id) throws ErrorException;
 
-    void high(String id);
+    void high(String id) throws ErrorException;
 
-    void low(String id);
+    void low(String id) throws ErrorException;
 
     void lendBook(Book book) throws ErrorException;
 
@@ -33,7 +32,7 @@ public interface IBookService {
 
     List<Book> findAll();
 
-    Optional<Book> findById(String id);
+    Book findById(String id) throws ErrorException;
 
     void save(Book book);
 

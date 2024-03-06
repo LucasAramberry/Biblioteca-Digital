@@ -3,6 +3,7 @@ package com.bibliotecadigital.service.impl;
 import com.bibliotecadigital.dto.AuthorDto;
 import com.bibliotecadigital.entities.Author;
 import com.bibliotecadigital.entities.Photo;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IAuthorDAO;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IPhotoService;
@@ -43,42 +44,33 @@ public class AuthorServiceImpl implements IAuthorService {
                 .photo(photoService.register(authorDto.getPhotoDto()))
                 .build());
 
-        log.info("Se registro un nuevo Autor");
+        log.info("Create new Author");
     }
 
     /**
      * metodo para modificar autor
      *
-     * @param id
      * @param authorDto
      */
     @Transactional
     @Override
-    public void update(String id, AuthorDto authorDto) {
+    public void update(AuthorDto authorDto) throws ErrorException {
 
-        Author author = findById(id);
+        Author author = findById(authorDto.getId());
 
-        if (author != null) {
+        author.setName(authorDto.getName());
 
-            author.setName(authorDto.getName());
-
-            Long idFoto = null;
-
-            if (author.getPhoto() != null) {
-                idFoto = author.getPhoto().getId();
-            }
-
-            Photo photo = photoService.update(idFoto, authorDto.getPhotoDto());
-
-            author.setPhoto(photo);
-
-            save(author);
-
-            log.info("Se actualizo un Autor");
-
-        } else {
-            log.error("No se encontro el autor solicitado para modificar.");
+        Photo photo = null;
+        if (author.getPhoto() != null && !authorDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.update(author.getPhoto().getId(), authorDto.getPhotoDto());
+        } else if (author.getPhoto() == null && !authorDto.getPhotoDto().getFile().isEmpty()) {
+            photo = photoService.register(authorDto.getPhotoDto());
         }
+        author.setPhoto(photo);
+
+        save(author);
+
+        log.info("Update Author");
     }
 
     /**
@@ -88,17 +80,12 @@ public class AuthorServiceImpl implements IAuthorService {
      */
     @Transactional
     @Override
-    public void delete(String id) {
+    public void delete(String id) throws ErrorException {
+
         Author author = findById(id);
+        authorDAO.delete(author);
 
-        if (author != null) {
-
-            authorDAO.delete(author);
-
-            log.info("Se elimino un Autor");
-        } else {
-            log.error("No se encontro el autor solicitado para eliminar.");
-        }
+        log.info("Delete Author with id " + id);
     }
 
     /**
@@ -108,20 +95,14 @@ public class AuthorServiceImpl implements IAuthorService {
      */
     @Transactional
     @Override
-    public void low(String id) {
+    public void low(String id) throws ErrorException {
 
         Author author = findById(id);
+        author.setUnsubscribe(LocalDateTime.now());
 
-        if (author != null) {
+        save(author);
 
-            author.setUnsubscribe(LocalDateTime.now());
-
-            save(author);
-
-            log.info("Se dio de baja un Autor");
-        } else {
-            log.error("No se encontro el autor solicitado para dar de baja.");
-        }
+        log.info("Low Author with id " + id);
     }
 
     /**
@@ -131,21 +112,14 @@ public class AuthorServiceImpl implements IAuthorService {
      */
     @Transactional
     @Override
-    public void high(String id) {
+    public void high(String id) throws ErrorException {
 
         Author author = findById(id);
 
-        if (author != null) {
+        author.setUnsubscribe(null);
+        save(author);
 
-            author.setUnsubscribe(null);
-
-            save(author);
-
-            log.info("Se dio de alta un Autor");
-
-        } else {
-            log.error("No se encontro el autor solicitado para dar de alta.");
-        }
+        log.info("High Author");
     }
 
     /**
@@ -194,15 +168,15 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     /**
-     * metodo para buscar autor por id
+     * Metodo para buscar autor por id
      *
      * @param id
      * @return
      */
     @Transactional(readOnly = true)
     @Override
-    public Author findById(String id) {
-        return authorDAO.findById(id).orElse(null);
+    public Author findById(String id) throws ErrorException {
+        return authorDAO.findById(id).orElseThrow(() -> new ErrorException("The author with id " + id + " was not found."));
     }
 
     @Transactional

@@ -17,22 +17,43 @@
     <i class="fas fa-arrow-left"></i>
 </a>
 
-<div class="contenedor1">
+<div class="contenedor">
 
-    <div class="contenedorHijo1">
+    <div class="contenedor-hijo">
 
         <div class="mb-3 bg-dark text-white">
 
             <div class="row g-0">
 
                 <div class="col-md-4 d-flex justify-content-center align-items-center">
-                    <img th:src="@{'/photo/book/' + ${book.id}}" class="img-fluid1 rounded-start" alt="Portada Libro">
+                    <img th:src="@{'/photo/book/' + ${book.id}}" class="img-fluid rounded-start" alt="Portada Libro">
                 </div>
 
                 <div class="col-md-8 card-body1">
 
-                    <h5 class="text-center" th:text="${book.title}"></h5>
-                    <br>
+                    <h3 class="text-center mb-4" th:text="${book.title}"></h3>
+
+                    <div sec:authorize="hasRole('ADMIN')" class="botones-book-card">
+
+                        <a th:if="${book.unsubscribe != null}" th:href="@{/book/high/__${book.id}__}"
+                           title="Dar de Alta">
+                            <i class="fas fa-arrow-up text-success"></i>
+                        </a>
+
+                        <a th:unless="${book.unsubscribe != null}"
+                           th:href="@{/book/low/__${book.id}__}" title="Dar de Baja">
+                            <i class="fas fa-arrow-down text-danger"></i>
+                        </a>
+
+                        <a th:href="@{/book/update/__${book.id}__}" title="Modificar">
+                            <i class="fas fa-feather-alt text-warning"></i>
+                        </a>
+
+                        <a th:href="@{/book/delete/__${book.id}__}" title="Eliminar">
+                            <i class="fas fa-archive text-danger"></i>
+                        </a>
+
+                    </div>
 
                     <ul>
                         <li sec:authorize="hasRole('ADMIN')" class="items" th:text="'ID: ' + ${book.id}"></li>
@@ -40,8 +61,8 @@
                         <li class="items" th:text="'DESCRIPCION: ' + ${book.description}"></li>
                         <li class="items" th:text="'FECHA: ' + ${book.datePublisher}"></li>
                         <li class="items" th:text="'CANTIDAD DE PAGINAS: ' + ${book.amountPages}"></li>
-                        <li class="items" th:text="'AUTOR: ' + ${book.author.name}"></li>
-                        <li class="items" th:text="'EDITORIAL: ' + ${book.publisher.name}"></li>
+                        <li class="items" th:text="'AUTOR: ' + ${author.name}"></li>
+                        <li class="items" th:text="'EDITORIAL: ' + ${publisher.name}"></li>
                         <li sec:authorize="hasRole('ADMIN')" class="items"
                             th:text="'EJEMPLARES: ' + ${book.amountCopies}"></li>
                         <li sec:authorize="hasRole('ADMIN')" class="items"
@@ -53,60 +74,40 @@
 
                     </ul>
 
-                    <div sec:authorize="hasRole('ADMIN')" class="text-center">
+                    <div sec:authorize="hasRole('ROLE_USER')" class="card-prestamo">
 
-                        <a class="btn btn-success" th:if="${book.unsubscribe != null}"
-                           th:href="@{/book/high/__${book.id}__}" role="button">DAR ALTA</a>
+                        <form th:action="@{/loan/register}" method="POST" th:object="${loan}">
 
-                        <a class="btn btn-danger" th:unless="${book.unsubscribe != null}"
-                           th:href="@{/book/low/__${book.id}__}" role="button">DAR BAJA</a>
-
-                        <a class="btn btn-warning" th:href="@{/book/update/__${book.id}__}" role="button">MODIFICAR</a>
-
-                        <a class="btn btn-danger" th:href="@{/book/delete/__${book.id}__}"
-                           role="button">ELIMINAR</a>
-
-                        <a class="btn btn-dark" th:href="@{/book}" role="button">VOLVER</a>
-                    </div>
-                </div>
-
-                <div sec:authorize="hasRole('ROLE_USER')" class="card-prestamo">
-
-                    <form th:action="@{/loan/register}" method="POST" th:object="${loan}">
-
-                        <div>
-                            <div class="text-center">
+                            <div>
                                 <h5>Prestamo</h5>
                                 <p>Si desea realizar un prestamo de este libro complete lo siguiente:</p>
                             </div>
-                        </div>
 
-                        <div>
+                            <div>
                             <span th:errors="*{dateReturn}" class="text-danger"
                                   th:if="${#fields.hasErrors('dateReturn')}"></span>
-                        </div>
+                            </div>
 
-                        <div class="fechas">
+                            <div class="fechas">
 
-                            <div class="inputFecha">
-                                <label for="dateReturn">Fecha Devolucion</label>
-                                <input type="date" class="form-control" id="dateReturn" name="dateReturn"
-                                       th:field="*{dateReturn}">
+                                <div>
+                                    <label for="dateReturn" class="mb-1">Fecha Devolucion</label>
+                                    <input type="date" class="form-control" id="dateReturn" name="dateReturn"
+                                           th:field="*{dateReturn}">
+                                </div>
+
+                                <div>
+                                    <input type="hidden" name="idBook" id="idBook" th:value="${book.id}"/>
+                                </div>
+
                             </div>
 
                             <div>
-                                <input type="hidden" name="idBook" id="idBook" th:value="${book.id}"/>
-                            </div>
-
-                        </div>
-
-                        <div class="d-flex justify-content-center">
-                            <div class="form-group2">
                                 <button type="submit" class="btn btn-danger">Crear Prestamo</button>
                             </div>
-                        </div>
 
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

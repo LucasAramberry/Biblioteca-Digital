@@ -10,22 +10,19 @@
 <div sec:authorize="hasRole('ROLE_ADMIN')">
     <h1>Lista Usuarios</h1>
 
-    <div class="form-group2 centrar-boton text-center">
-        <a href="/registro" class="btn btn-dark" tabindex="-1" role="button">Agregar usuario</a>
-    </div>
-
     <div>
-        <div class="filtrar bg-dark text-white">
+        <div class="filtrar">
             <div>
                 <h5>Buscar usuario</h5>
             </div>
             <div>
-                <form action="/usuarios" method="GET" enctype="multipart/form-data">
-                    <select class="filtrar-select" name="idUsuario">
+                <form action="/user" method="GET" enctype="multipart/form-data">
+                    <select class="filtrar-select" name="idUser">
                         <option selected>Todos</option>
-                        <option th:each="usuario : ${usuariosLista}" th:value="${usuario.id}" th:text="${usuario.mail}"
-                                th:selected="${usuarioSelected != null && usuario.id == usuarioSelected.id}"></option>
+                        <option th:each="user : ${userList}" th:value="${user.id}" th:text="${user.email}"
+                                th:selected="${userSelected != null && user.id == userSelected.id}"></option>
                     </select>
+
                     <div class="filtrar-boton">
                         <button type="submit" class="btn btn-warning">Buscar</button>
                     </div>
@@ -35,49 +32,59 @@
     </div>
 
     <div class="contenedor">
-        <div class="contenedorHijo" th:each="usuario : ${usuarios}">
-            <div class="card mb-3 bg-dark text-white">
-                <div class="row g-0">
-                    <div class="col-md-4 imagen-card">
-                        <img th:src="@{'/foto/usuario/' + ${usuario.id}}" class="img-fluid rounded-start"
-                             alt="Foto usuario">
+        <div class="contenedor-hijo" th:each="user : ${users}">
+            <div class="card">
+
+                <div class="col-md-4 imagen-card">
+                    <img th:src="@{'/photo/user/' + ${user.id}}" class="rounded-start"
+                         alt="Foto usuario">
+                </div>
+
+                <div class="col-md-8 card-body">
+
+                    <strong class="text-center text-success" th:if="${user.unsubscribe == null}"
+                            th:text="'ACTIVO '"></strong>
+
+                    <strong class="text-center text-danger" th:unless="${user.unsubscribe == null}"
+                            th:text="'INACTIVO '"></strong>
+
+
+                    <ul class="lista-prestamos">
+                        <li class="fw-bold" th:text="'ROL: ' + ${user.role}"></li>
+                        <li th:text="'USUARIO: ' + ${user.email}"></li>
+                        <li th:text="'NOMBRE: ' + ${user.name}"></li>
+                        <li th:text="'APELLIDO: ' + ${user.lastName}"></li>
+                        <li th:text="'DOCUMENTO: ' + ${user.dni}"></li>
+                        <li th:text="'TELEFONO: ' + ${user.phone}"></li>
+                        <li th:text="'SEXO: ' + ${user.gender}"></li>
+                        <li th:text="'ZONA: ' + ${user.city.name}"></li>
+                        <li th:text="'ALTA: ' + ${user.register}"></li>
+                        <li th:text="'BAJA: ' + ${user.unsubscribe}"></li>
+                    </ul>
+
+                    <div class="botones">
+                        <a th:if="${user.unsubscribe != null}" th:href="@{/user/high/__${user.id}__}"
+                           title="Dar de Alta"><i class="fas fa-arrow-up text-success"></i></a>
+
+                        <a th:unless="${user.unsubscribe != null}" th:href="@{/user/low/__${user.id}__}"
+                           title="Dar de Baja"><i class="fas fa-arrow-down text-danger"></i></a>
+
+                        <a th:if="${#strings.equals(user.role, 'USER')}"
+                           th:href="@{/user/change-role/__${user.id}__}"
+                           title="Cambiar a Administrador"><i class="fas fa-star text-warning"></i></a>
+
+                        <a th:unless="${#strings.equals(user.role, 'USER')}"
+                           th:href="@{/user/change-role/__${user.id}__}" title="Cambiar a Usuario"><i
+                                class="fas fa-user text-primary"></i></a>
+
+<!--                        <a th:href="@{/user/edit-profile/__${user.id}__}" title="Modificar"><i-->
+<!--                                class="fas fa-feather-alt text-warning"></i></a>-->
+
+                        <a th:href="@{/user/delete/__${user.id}__}" title="Eliminar">
+                            <i class="fas fa-archive text-danger"></i>
+                        </a>
                     </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <strong class="text-center text-success" th:if="${usuario.baja == null}"
-                                    th:text="'ACTIVO '"></strong>
-                            <strong class="text-center text-danger" th:unless="${usuario.baja == null}"
-                                    th:text="'INACTIVO '"></strong>
 
-                            <a th:if="${usuario.baja != null}" th:href="@{/usuario/alta(id=__${usuario.id}__)}"
-                               title="Dar de Alta"><i class="fa fa-arrow-up text-success"></i></a>
-                            <a th:unless="${usuario.baja != null}" th:href="@{/usuario/baja(id=__${usuario.id}__)}"
-                               title="Dar de Baja"><i class="fa fa-arrow-down text-danger"></i></a>
-
-                            <a th:if="${usuario.rol} != ${rolAdmin}"
-                               th:href="@{/usuario/cambiar-rol(id=__${usuario.id}__)}"
-                               title="Cambiar a Administrador"><i class="fa fa-star text-warning"></i></a>
-                            <a th:unless="${usuario.rol} != ${rolAdmin}"
-                               th:href="@{/usuario/cambiar-rol(id=__${usuario.id}__)}" title="Cambiar a Usuario"><i
-                                    class="fa fa-user text-primary"></i></a>
-
-                            <a th:href="@{/usuario/editar-perfil(id=__${usuario.id}__)}" title="Modificar"><i
-                                    class="fas fa-feather-alt text-warning"></i></a>
-
-                            <ul class="lista-prestamos">
-                                <li class="fw-bold" th:text="'ROL: ' + ${usuario.rol}"></li>
-                                <li th:text="'USUARIO: ' + ${usuario.mail}"></li>
-                                <li th:text="'NOMBRE: ' + ${usuario.nombre}"></li>
-                                <li th:text="'APELLIDO: ' + ${usuario.apellido}"></li>
-                                <li th:text="'DOCUMENTO: ' + ${usuario.documento}"></li>
-                                <li th:text="'TELEFONO: ' + ${usuario.telefono}"></li>
-                                <li th:text="'SEXO: ' + ${usuario.sexo}"></li>
-                                <li th:text="'ZONA: ' + ${usuario.zona.nombre}"></li>
-                                <li th:text="'ALTA: ' + ${usuario.alta}"></li>
-                                <li th:text="'BAJA: ' + ${usuario.baja}"></li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

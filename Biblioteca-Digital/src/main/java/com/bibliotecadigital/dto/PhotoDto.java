@@ -1,6 +1,5 @@
 package com.bibliotecadigital.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,5 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class PhotoDto {
 
-//    @NotBlank(message = "")
     private MultipartFile file;
-
 }

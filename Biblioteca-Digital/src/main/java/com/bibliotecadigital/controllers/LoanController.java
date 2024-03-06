@@ -12,15 +12,15 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * @author Lucas
+ * @author Lucas Aramberry
  */
 @Controller
 @RequestMapping("/loan")
@@ -37,20 +37,22 @@ public class LoanController {
     @GetMapping
     public String loans(ModelMap model, @RequestParam(required = false) String idUser) {
 
-        List<User> listActive = userService.findAll();
-        System.out.println("listActive = " + listActive);
+        try {
+            model.addAttribute("users", userService.findAll());
 
-        model.addAttribute("users", listActive);
+            User userSelected = null;
 
-        model.addAttribute("userSelected", null);
+            if (idUser != null) {
 
-        if (idUser != null) {
-            List<Loan> loansUser = loanService.findByUser(idUser);
-            model.put("loan", loansUser);
-            model.addAttribute("userSelected", userService.findById(idUser));
-        } else {
-            List<Loan> loans = loanService.findAll();
-            model.put("loans", loans);
+                model.put("loans", (idUser.equalsIgnoreCase("todos")) ? loanService.findAll() : loanService.findByUser(idUser));
+
+                userSelected = userService.findById(idUser);
+
+                model.addAttribute("userSelected", userSelected != null ? userSelected : null);
+            }
+
+        } catch (ErrorException e) {
+            e.getMessage();
         }
 
         return "prestamos.html";
@@ -83,8 +85,7 @@ public class LoanController {
 
         //Verificamos si es un administrador para pasarle la lista de users
         if (login.getRole().equals(Role.ADMIN)) {
-            List<User> users = userService.findAll();
-            model.put("users", users);
+            model.put("users", userService.findAll());
         }
 
         List<Book> books = bookService.findAll();
@@ -97,7 +98,7 @@ public class LoanController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @PostMapping("/register")
-    public String registerLoan(ModelMap model, HttpSession session, @ModelAttribute(name = "loan") @Valid LoanDto loanDto, BindingResult result) throws ErrorException {
+    public String registerLoan(ModelMap model, HttpSession session, @ModelAttribute(name = "loan") @Valid LoanDto loanDto, BindingResult result) {
 
         //Usamos el usuario logueado para obtener el id de la sesion del usuario y
         //no mandarlo a travez del input hidden del html
@@ -111,75 +112,101 @@ public class LoanController {
             return "redirect:/";
         }
 
-        //verificamos si es usuario y sacamos el id de la sesion y si es admin mandamos lista de users
-        if (login.getRole().equals(Role.USER)) {
-            //Si buscamos el usuario asi tenemos q habilitar el input hidden del html y
-            //colocar el atributo como requerido y comentar el login ya q no haria falta
+        try {
 
-            loanDto.setUser(login);
-
-            loanService.register(loanDto);
-
-            return "redirect:/loan/my-loans"; //cambiar return
-        } else {
-            loanService.register(loanDto);
-            return "redirect:/loan";
+            if (login.getRole().equals(Role.USER)) {
+                loanDto.setIdUser(login.getId());
+                loanService.register(loanDto);
+                return "redirect:/loan/my-loans";
+            } else {
+                loanService.register(loanDto);
+            }
+        } catch (ErrorException e) {
+            e.getMessage();
         }
+
+        return "redirect:/loan";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/update")
-    public String updateLoan(ModelMap model, @RequestParam Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/update/{id}")
+    public String updateLoan(Model model, @PathVariable Long id) {
 
-        List<Book> books = bookService.findAll();
-        model.put("books", books);
+        try {
+            Loan loan = loanService.findById(id);
 
-        List<User> users = userService.findAll();
-        model.put("users", users);
+            model.addAttribute("user", loan.getUser().getEmail());
+            model.addAttribute("books", bookService.findAll());
+            model.addAttribute("loan", LoanDto
+                    .builder()
+                    .id(loan.getId())
+                    .dateLoan(loan.getDateLoan())
+                    .dateReturn(loan.getDateReturn())
+                    .idBook(loan.getBook().getId())
+                    .idUser(loan.getUser().getId())
+                    .build()
+            );
 
-        Optional<Loan> loans = loanService.findById(id);
-        model.addAttribute("loans", loans.get());
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
 
         return "modificar-prestamo.html";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/update")
-    public String updateLoan(ModelMap model, @RequestParam Long id, @ModelAttribute(name = "prestamo") @Valid LoanDto loanDto, BindingResult result) throws ErrorException {
+    public String updateLoan(Model model, @ModelAttribute(name = "loan") @Valid LoanDto loanDto, BindingResult result) {
 
-        if (result.hasErrors()) {
-            List<Book> books = bookService.findAll();
-            model.put("books", books);
+        try {
+            if (result.hasErrors()) {
+                Loan loan = loanService.findById(Long.valueOf(loanDto.getIdUser()));
+                model.addAttribute("user", loan.getUser().getEmail());
+                model.addAttribute("books", bookService.findAll());
+                model.addAttribute("loan", loanDto);
 
-            List<User> users = userService.findAll();
-            model.put("users", users);
+                return "modificar-prestamo.html";
+            }
 
-            model.addAttribute("loan", loanDto);
-            return "modificar-prestamo.html";
+            loanService.update(loanDto);
+
+        } catch (ErrorException e) {
+            e.getMessage();
         }
-        loanService.update(id, loanDto);
-        return "redirect:/loan";
 
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/low")
-    public String low(ModelMap model, @RequestParam Long id) {
-        loanService.low(id);
         return "redirect:/loan";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/high")
-    public String high(ModelMap model, @RequestParam Long id) throws ErrorException {
-        loanService.high(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/low/{id}")
+    public String low(ModelMap model, @PathVariable Long id) {
+        try {
+            loanService.low(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/loan";
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/delete")
-    public String delete(ModelMap model, @RequestParam Long id) {
-        loanService.delete(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/high/{id}")
+    public String high(ModelMap model, @PathVariable Long id) {
+        try {
+            loanService.high(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
+        return "redirect:/loan";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/delete/{id}")
+    public String delete(ModelMap model, @PathVariable Long id) {
+        try {
+            loanService.delete(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/loan";
     }
 }

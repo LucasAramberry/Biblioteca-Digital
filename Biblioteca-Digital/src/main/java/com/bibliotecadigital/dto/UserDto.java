@@ -48,7 +48,7 @@ public class UserDto {
     @Email(message = "Email incorrect format.")
     private String email;
 
-    @NotBlank(message = "Invalid password. Must contain at least 6 digits.")
+    @NotBlank(message = "Invalid password, cannot be null.")
     @Size(min = 6, max = 16, message = "Invalid password. Must contain at least 6 digits.")
     private String password;
 

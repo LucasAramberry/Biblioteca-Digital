@@ -1,7 +1,6 @@
 package com.bibliotecadigital.error;
 
 /**
- *
  * @author Lucas Aramberry
  */
 public class ErrorException extends Exception {

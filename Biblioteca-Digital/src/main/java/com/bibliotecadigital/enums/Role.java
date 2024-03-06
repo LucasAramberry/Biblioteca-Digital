@@ -1,5 +1,5 @@
 package com.bibliotecadigital.enums;
 
 public enum Role {
-    ADMIN,USER,INVITED
+    ADMIN, USER, INVITED
 }

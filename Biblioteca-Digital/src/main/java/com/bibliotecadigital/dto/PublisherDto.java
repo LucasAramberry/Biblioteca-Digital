@@ -14,7 +14,7 @@ public class PublisherDto {
 
     private String id;
 
-    @NotBlank(message = "El nombre de la editorial no puede ser nulo.")
+    @NotBlank(message = "Name of publisher cannot be null.")
     private String name;
 
     private PhotoDto photoDto;

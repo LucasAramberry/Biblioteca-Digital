@@ -1,14 +1,16 @@
 package com.bibliotecadigital.controllers;
 
-import com.bibliotecadigital.dto.BookDto;
-import com.bibliotecadigital.dto.LoanDto;
-import com.bibliotecadigital.dto.PhotoDto;
+import com.bibliotecadigital.dto.*;
 import com.bibliotecadigital.entities.Author;
 import com.bibliotecadigital.entities.Book;
 import com.bibliotecadigital.entities.Publisher;
+import com.bibliotecadigital.entities.User;
+import com.bibliotecadigital.enums.Role;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.service.IAuthorService;
 import com.bibliotecadigital.service.IBookService;
 import com.bibliotecadigital.service.IPublisherService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,10 +18,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Lucas Aramberry
@@ -36,16 +36,27 @@ public class BookController {
     private IPublisherService publisherService;
 
     @GetMapping
-    public String books(ModelMap model, @RequestParam(required = false) String idBook, @RequestParam(required = false) String idAuthor, @RequestParam(required = false) String idPublisher) {
+    public String books(ModelMap model, HttpSession session, @RequestParam(required = false) String idBook) {
 
-        List<Book> booksActive = bookService.listBookActive();
+        try {
+            List<Book> booksActive;
 
-        model.put("booksActive", booksActive);
-        model.addAttribute("books", booksActive);
+            User userLogin = (User) session.getAttribute("usersession");
+            if (userLogin != null && userLogin.getRole().equals(Role.ADMIN)) {
+                booksActive = bookService.findAll();
+            } else {
+                booksActive = bookService.listBookActive();
+            }
 
-        if (idBook != null) {
-            Optional<Book> bookForTitle = bookService.findById(idBook);
-            model.addAttribute("books", bookForTitle.isPresent() ? bookForTitle.get() : booksActive);
+            model.put("booksActive", booksActive);
+            model.addAttribute("books", booksActive);
+
+            if (idBook != null) {
+                model.addAttribute("books", bookService.findById(idBook));
+            }
+
+        } catch (ErrorException e) {
+            e.getMessage();
         }
 
         return "libros.html";
@@ -55,30 +66,52 @@ public class BookController {
     @GetMapping("/view/{id}")
     public String viewBooks(@PathVariable String id, ModelMap model) {
 
-        model.addAttribute("loan", LoanDto.builder().build());
+        try {
 
-        Optional<Book> book = bookService.findById(id);
+            model.addAttribute("loan", LoanDto.builder().build());
 
-        model.addAttribute("book", BookDto
-                .builder()
-                .id(book.get().getId())
-                .isbn(book.get().getIsbn())
-                .title(book.get().getTitle())
-                .description(book.get().getDescription())
-                .datePublisher(book.get().getDatePublisher())
-                .amountPages(book.get().getAmountPages())
-                .amountCopies(book.get().getAmountCopies())
-                .amountCopiesBorrowed(book.get().getAmountCopiesBorrowed())
-                .amountCopiesRemaining(book.get().getAmountCopiesRemaining())
-                .photoDto(PhotoDto
-                        .builder()
-                        .file((MultipartFile) book.get().getPhoto())
-                        .build()
-                )
-                .idAuthor(book.get().getAuthor().getId())
-                .idPublisher(book.get().getPublisher().getId())
-                .build()
-        );
+            Book book = bookService.findById(id);
+
+            model.addAttribute("book", BookDto
+                    .builder()
+                    .id(book.getId())
+                    .isbn(book.getIsbn())
+                    .title(book.getTitle())
+                    .description(book.getDescription())
+                    .datePublisher(book.getDatePublisher())
+                    .amountPages(book.getAmountPages())
+                    .amountCopies(book.getAmountCopies())
+                    .amountCopiesBorrowed(book.getAmountCopiesBorrowed())
+                    .amountCopiesRemaining(book.getAmountCopiesRemaining())
+                    .photoDto(PhotoDto.builder().build())
+                    .idAuthor(book.getAuthor().getId())
+                    .idPublisher(book.getPublisher().getId())
+                    .register(book.getRegister())
+                    .unsubscribe(book.getUnsubscribe())
+                    .build()
+            );
+
+            Author author = authorService.findById(book.getAuthor().getId());
+
+            model.addAttribute("author", AuthorDto
+                    .builder()
+                    .id(author.getId())
+                    .name(author.getName())
+                    .build()
+            );
+
+            Publisher publisher = publisherService.findById(book.getPublisher().getId());
+
+            model.addAttribute("publisher", PublisherDto
+                    .builder()
+                    .id(book.getPublisher().getId())
+                    .name(book.getPublisher().getName())
+                    .build()
+            );
+
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
 
         return "libro.html";
     }
@@ -110,43 +143,55 @@ public class BookController {
             return "registro-libro.html";
         }
 
-        bookService.register(bookDto);
+        try {
+            bookService.register(bookDto);
+            model.put("titulo", "Registro exitoso!");
+            model.put("descripcion", "El libro ingresado fue registrado correctamente.");
 
-        model.put("titulo", "Registro exitoso!");
-        model.put("descripcion", "El libro ingresado fue registrado correctamente.");
+            return "exito.html";
 
-        return "exito.html";
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
+
+        return "redirect:/book";
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/update/{id}")
     public String updateBook(ModelMap model, @PathVariable String id) {
 
-        model.put("authors", authorService.findAll());
-        model.put("publishers", publisherService.findAll());
+        try {
+            model.put("authors", authorService.findAll());
+            model.put("publishers", publisherService.findAll());
 
-        Optional<Book> book = bookService.findById(id);
+            Book book = null;
+            book = bookService.findById(id);
 
-        model.addAttribute("book", BookDto
-                .builder()
-                .id(book.get().getId())
-                .isbn(book.get().getIsbn())
-                .title(book.get().getTitle())
-                .description(book.get().getDescription())
-                .datePublisher(book.get().getDatePublisher())
-                .amountPages(book.get().getAmountPages())
-                .amountCopies(book.get().getAmountCopies())
-                .amountCopiesBorrowed(book.get().getAmountCopiesBorrowed())
-                .amountCopiesRemaining(book.get().getAmountCopiesRemaining())
-                .photoDto(PhotoDto
-                        .builder()
-                        .file((MultipartFile) book.get().getPhoto())
-                        .build()
-                )
-                .idAuthor(book.get().getAuthor().getId())
-                .idPublisher(book.get().getPublisher().getId())
-                .build()
-        );
+            model.addAttribute("book", BookDto
+                            .builder()
+                            .id(book.getId())
+                            .isbn(book.getIsbn())
+                            .title(book.getTitle())
+                            .description(book.getDescription())
+                            .datePublisher(book.getDatePublisher())
+                            .amountPages(book.getAmountPages())
+                            .amountCopies(book.getAmountCopies())
+                            .amountCopiesBorrowed(book.getAmountCopiesBorrowed())
+                            .amountCopiesRemaining(book.getAmountCopiesRemaining())
+                            .photoDto(PhotoDto
+                                            .builder()
+//                        .file((MultipartFile) book.getPhoto())
+                                            .build()
+                            )
+                            .idAuthor(book.getAuthor().getId())
+                            .idPublisher(book.getPublisher().getId())
+                            .build()
+            );
+
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
 
         return "modificar-libro.html";
     }
@@ -162,7 +207,11 @@ public class BookController {
             return "modificar-libro.html";
         }
 
-        bookService.update(bookDto.getId(), bookDto);
+        try {
+            bookService.update(bookDto);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
 
         return "redirect:/book";
     }
@@ -170,21 +219,33 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/low/{id}")
     public String low(ModelMap model, @PathVariable String id) {
-        bookService.low(id);
+        try {
+            bookService.low(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/book";
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/high/{id}")
     public String high(ModelMap model, @PathVariable String id) {
-        bookService.high(id);
+        try {
+            bookService.high(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/book";
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/delete/{id}")
     public String delete(ModelMap model, @PathVariable String id) {
-        bookService.delete(id);
+        try {
+            bookService.delete(id);
+        } catch (ErrorException e) {
+            e.getMessage();
+        }
         return "redirect:/book";
     }
 }

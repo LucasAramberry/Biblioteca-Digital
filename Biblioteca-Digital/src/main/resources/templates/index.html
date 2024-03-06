@@ -8,28 +8,26 @@
 
 <nav th:replace="~{/fragments/navbar :: nav}"></nav>
 
-<section class="text-center text-light centrar">
-    <h1 th:if="${session.usersession == null}" class="titulo font-monospace t-stroke t-shadow-halftone glitch" >
+<section class="centrar">
+    <h1 th:if="${session.usersession == null}" class="titulo font-monospace t-stroke t-shadow-halftone glitch">
         ¡Bienvenidos a Biblioteca Digital!</h1>
 
     <h1 th:if="${session.usersession != null}" class="titulo font-monospace t-stroke t-shadow-halftone glitch"
         th:text="${'¡Hola ' + session.usersession.name + ' ' + session.usersession.lastName + '!'}"></h1>
 
-    <h2 class="enlacesSub">
-        <a class="enlaces-sub" href="/book">Libros</a>
+    <h2 class="enlaces-sub">
+        <a href="/book">Libros</a>
         |
-        <a class="enlaces-sub" href="/author">Autores</a>
+        <a href="/author">Autores</a>
         |
-        <a class="enlaces-sub" href="/publisher">Editoriales</a>
+        <a href="/publisher">Editoriales</a>
     </h2>
 
     <div class="mt-5">
-        <a sec:authorize="hasRole('USER')" th:if="${session.usersession != null}" class="enlaces-sub"
-           th:href="@{/loan/my-loans}">
+        <a sec:authorize="hasRole('USER')" th:if="${session.usersession != null}" th:href="@{/loan/my-loans}">
             <button type="button" class="btn btn-dark btn">Mis prestamos</button>
         </a>
-        <a th:if="${session.usersession != null}" class="enlaces-sub"
-           th:href="@{'/user/edit-profile/' + ${session.usersession.id}}">
+        <a th:if="${session.usersession != null}" th:href="@{'/user/edit-profile/' + ${session.usersession.id}}">
             <button type="button" class="btn btn-dark btn">Configurar Perfil</button>
         </a>
     </div>

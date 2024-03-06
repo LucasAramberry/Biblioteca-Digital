@@ -45,7 +45,7 @@ public class Loan {
     @Column(name = "baja", columnDefinition = "DATETIME")
     private LocalDateTime unsubscribe;
 
-    @OneToOne(targetEntity = Book.class)
+    @ManyToOne(targetEntity = Book.class)
     @JoinColumn(name = "id_libro")
     private Book book;
 

@@ -1,6 +1,7 @@
 package com.bibliotecadigital.service.impl;
 
 import com.bibliotecadigital.entities.City;
+import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.ICityDAO;
 import com.bibliotecadigital.service.ICityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-
 
 /**
  * @author Lucas Aramberry
@@ -28,8 +27,8 @@ public class CityServiceImpl implements ICityService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<City> findById(Long id) {
-        return cityDAO.findById(id);
+    public City findById(Long id) throws ErrorException {
+        return cityDAO.findById(id).orElseThrow(() -> new ErrorException("The city with id " + id + " was not found."));
     }
 
     @Transactional

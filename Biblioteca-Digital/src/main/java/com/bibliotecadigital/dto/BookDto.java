@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -16,18 +17,18 @@ public class BookDto {
 
     private String id;
 
-    @NotBlank(message = "Isbn cannot be null")
-    @Size(min = 13, max = 13, message = "Isbn must contains 13 digits")
+    @NotBlank(message = "Isbn cannot be null.")
+    @Size(min = 13, max = 13, message = "Isbn must contains 13 digits.")
     private String isbn;
 
-    @NotBlank(message = "Titulo cannot be null")
+    @NotBlank(message = "Title cannot be null.")
     private String title;
 
-    @NotBlank(message = "Description cannot be null")
-    @Size(min = 25, max = 255, message = "Description contains min 25 characters")
+    @NotBlank(message = "Description cannot be null.")
+    @Size(min = 25, max = 255, message = "Description contains min 25 characters.")
     private String description;
 
-    @NotNull(message = "Date of publisher cannot be null")
+    @NotNull(message = "Date of publisher cannot be null.")
     @PastOrPresent(message = "Date of publisher is invalid.")
     private LocalDate datePublisher;
 
@@ -44,6 +45,10 @@ public class BookDto {
     private Integer amountCopiesBorrowed;
 
     private Integer amountCopiesRemaining;
+
+    private LocalDateTime register;
+
+    private LocalDateTime unsubscribe;
 
     private PhotoDto photoDto;
 

@@ -12,25 +12,25 @@ public interface ILoanService {
 
     void register(LoanDto loanDto) throws ErrorException;
 
-    void update(Long id, LoanDto loanDto) throws ErrorException;
+    void update(LoanDto loanDto) throws ErrorException;
 
-    void delete(Long id);
+    void delete(Long id) throws ErrorException;
 
     void high(Long id) throws ErrorException;
 
-    void low(Long id);
+    void low(Long id) throws ErrorException;
 
-    void devolution(Long id);
+    void devolution(Long id) throws ErrorException;
 
-    public List<Loan> findByUser(@Param("id") String id);
+    List<Loan> findByUser(@Param("id") String id);
 
-    public List<Loan> findByActive();
+    List<Loan> findByActive();
 
-    public List<Loan> findByInactive();
+    List<Loan> findByInactive();
 
     List<Loan> findAll();
 
-    Optional<Loan> findById(Long id);
+    Loan findById(Long id) throws ErrorException;
 
     void save(Loan loan);
 

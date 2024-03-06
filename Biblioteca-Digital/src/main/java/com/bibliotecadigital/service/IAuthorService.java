@@ -2,6 +2,7 @@ package com.bibliotecadigital.service;
 
 import com.bibliotecadigital.dto.AuthorDto;
 import com.bibliotecadigital.entities.Author;
+import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
 
@@ -9,13 +10,13 @@ public interface IAuthorService {
 
     void register(AuthorDto authorDto);
 
-    void update(String id, AuthorDto authorDto);
+    void update(AuthorDto authorDto) throws ErrorException;
 
-    void delete(String id);
+    void delete(String id) throws ErrorException;
 
-    void high(String id);
+    void high(String id) throws ErrorException;
 
-    void low(String id);
+    void low(String id) throws ErrorException;
 
     List<Author> findByActive();
 
@@ -25,7 +26,7 @@ public interface IAuthorService {
 
     List<Author> findAll();
 
-    Author findById(String id);
+    Author findById(String id) throws ErrorException;
 
     void save(Author author);
 

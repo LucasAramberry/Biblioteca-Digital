@@ -42,7 +42,4 @@ public class Author {
     @JoinColumn(name = "id_foto")
     private Photo photo;
 
-//    @Column(name = "editorial")
-//    @ManyToOne(targetEntity = Book.class, cascade = CascadeType.REMOVE)
-//    private Book book;
 }

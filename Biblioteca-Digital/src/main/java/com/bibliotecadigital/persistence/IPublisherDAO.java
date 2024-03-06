@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface IPublisherDAO {
 
-    public List<Publisher> findByActive();
+    List<Publisher> findByActive();
 
-    public List<Publisher> findByInactive();
+    List<Publisher> findByInactive();
 
-    public Publisher findByName(String name);
+    Publisher findByName(String name);
 
     List<Publisher> findAll();
 
