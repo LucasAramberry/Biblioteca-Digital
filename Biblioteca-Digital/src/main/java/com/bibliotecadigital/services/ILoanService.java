@@ -1,4 +1,4 @@
-package com.bibliotecadigital.service;
+package com.bibliotecadigital.services;
 
 import com.bibliotecadigital.dto.LoanDto;
 import com.bibliotecadigital.entities.Loan;
@@ -6,7 +6,6 @@ import com.bibliotecadigital.error.ErrorException;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ILoanService {
 

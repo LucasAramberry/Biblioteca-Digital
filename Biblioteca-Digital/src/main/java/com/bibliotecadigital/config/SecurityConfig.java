@@ -1,6 +1,6 @@
 package com.bibliotecadigital.config;
 
-import com.bibliotecadigital.service.impl.UserDetailsServiceImpl;
+import com.bibliotecadigital.services.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,9 +43,9 @@ public class SecurityConfig {
                 .formLogin(form -> {
                     form.loginPage("/login");
                     form.loginProcessingUrl("/login");
-                    form.usernameParameter("username"); // Como viajan los datos del logueo
-                    form.passwordParameter("password"); // Como viajan los datos del logueo
-                    form.successHandler(successHandler()); //URL hacia donde se redirije despues de iniciar sesion
+                    form.usernameParameter("username");
+                    form.passwordParameter("password");
+                    form.successHandler(successHandler());
                     form.permitAll();
                 })
                 .logout(logout -> {
@@ -65,7 +65,6 @@ public class SecurityConfig {
                         sessionFixation.migrateSession();
                     });
                 })
-                .csrf(csrf -> csrf.disable())
                 .build();
     }
 

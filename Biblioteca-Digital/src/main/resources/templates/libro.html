@@ -74,7 +74,7 @@
 
                     </ul>
 
-                    <div sec:authorize="hasRole('ROLE_USER')" class="card-prestamo">
+                    <div sec:authorize="hasRole('ROLE_USER')" th:if="${book.amountCopiesRemaining > 0}" class="card-prestamo">
 
                         <form th:action="@{/loan/register}" method="POST" th:object="${loan}">
 
@@ -83,16 +83,11 @@
                                 <p>Si desea realizar un prestamo de este libro complete lo siguiente:</p>
                             </div>
 
-                            <div>
-                            <span th:errors="*{dateReturn}" class="text-danger"
-                                  th:if="${#fields.hasErrors('dateReturn')}"></span>
-                            </div>
-
                             <div class="fechas">
 
                                 <div>
                                     <label for="dateReturn" class="mb-1">Fecha Devolucion</label>
-                                    <input type="date" class="form-control" id="dateReturn" name="dateReturn"
+                                    <input type="date" class="form-control" id="dateReturn" name="dateReturn" required
                                            th:field="*{dateReturn}">
                                 </div>
 

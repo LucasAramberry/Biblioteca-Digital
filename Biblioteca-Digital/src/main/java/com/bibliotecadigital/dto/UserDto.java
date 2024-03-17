@@ -2,6 +2,8 @@ package com.bibliotecadigital.dto;
 
 import com.bibliotecadigital.enums.Gender;
 import com.bibliotecadigital.enums.Role;
+import com.bibliotecadigital.validations.annotations.ValidPassword;
+import com.bibliotecadigital.validations.annotations.ValidPasswordMatches;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ValidPasswordMatches
 public class UserDto {
 
     private String id;
@@ -48,8 +51,7 @@ public class UserDto {
     @Email(message = "Email incorrect format.")
     private String email;
 
-    @NotBlank(message = "Invalid password, cannot be null.")
-    @Size(min = 6, max = 16, message = "Invalid password. Must contain at least 6 digits.")
+    @ValidPassword
     private String password;
 
     private String matchingPassword;

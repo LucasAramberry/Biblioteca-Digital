@@ -23,5 +23,4 @@ public interface IBookDAO {
 
     void delete(Book book);
 
-    void deleteById(String id);
 }

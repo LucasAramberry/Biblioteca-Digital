@@ -1,4 +1,4 @@
-package com.bibliotecadigital.service;
+package com.bibliotecadigital.services;
 
 import com.bibliotecadigital.dto.BookDto;
 import com.bibliotecadigital.entities.Book;
@@ -38,5 +38,4 @@ public interface IBookService {
 
     void delete(Book book);
 
-    void deleteById(String id);
 }

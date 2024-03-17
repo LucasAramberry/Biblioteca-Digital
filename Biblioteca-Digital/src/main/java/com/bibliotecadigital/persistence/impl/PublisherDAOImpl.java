@@ -26,7 +26,7 @@ public class PublisherDAOImpl implements IPublisherDAO {
     }
 
     @Override
-    public Publisher findByName(String name) {
+    public Optional<Publisher> findByName(String name) {
         return publisherRepository.findByName(name);
     }
 

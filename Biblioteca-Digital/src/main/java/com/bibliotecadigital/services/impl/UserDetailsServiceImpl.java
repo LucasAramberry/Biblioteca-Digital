@@ -1,7 +1,7 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 import com.bibliotecadigital.entities.User;
-import com.bibliotecadigital.repositories.UserRepository;
+import com.bibliotecadigital.services.IUserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,18 +15,17 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private IUserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User user = Optional.of(userRepository.findByEmail(username)).orElseThrow(() -> new UsernameNotFoundException("User " + username + " not exist."));
+        User user = userService.findByEmail(username);
 
         Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_".concat(user.getRole().name())));
 

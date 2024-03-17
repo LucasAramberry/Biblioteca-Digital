@@ -3,23 +3,22 @@ package com.bibliotecadigital.repositories;
 import com.bibliotecadigital.entities.Publisher;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PublisherRepository extends CrudRepository<Publisher, String> {
 
-    // Devuelve una Lista con editoriales activos.
+    // Return list publishers active.
     @Query("SELECT e FROM Publisher e WHERE e.unsubscribe IS null")
-    public List<Publisher> findByActive();
+    List<Publisher> findByActive();
 
-    // Devuelve una Lista con editoriales dados de baja.
+    // Return list publishers inactive.
     @Query("SELECT e FROM Publisher e WHERE e.unsubscribe IS NOT null")
-    public List<Publisher> findByInactive();
+    List<Publisher> findByInactive();
 
-    // Devuelve editorial por nombre
-    @Query("SELECT e FROM Publisher e WHERE e.name = :name")
-    public Publisher findByName(@Param("name") String name);
+    // Return publisher by name
+    Optional<Publisher> findByName(String name);
 }

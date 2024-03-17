@@ -49,8 +49,10 @@
                     <a class="nav-link" th:href="@{/user/edit-profile/__${session.usersession.id}__}"
                        th:if="${session.usersession != null}">Editar Perfil</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout" th:if="${session.usersession != null}">Salir</a>
+                <li class="nav-item" th:if="${session.usersession != null}">
+                    <form th:action="@{/logout}" method="POST" id="logoutForm">
+                        <a class="nav-link" href="#" onclick="document.getElementById('logoutForm').submit();">Salir</a>
+                    </form>
                 </li>
             </ul>
 

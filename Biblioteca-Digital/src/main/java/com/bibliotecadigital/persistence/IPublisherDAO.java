@@ -11,7 +11,7 @@ public interface IPublisherDAO {
 
     List<Publisher> findByInactive();
 
-    Publisher findByName(String name);
+    Optional<Publisher> findByName(String name);
 
     List<Publisher> findAll();
 

@@ -16,7 +16,7 @@ public class UserDAOImpl implements IUserDAO {
     private UserRepository userRepository;
 
     @Override
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -26,8 +26,8 @@ public class UserDAOImpl implements IUserDAO {
     }
 
     @Override
-    public List<User> findByInactive() {
-        return userRepository.findByInactive();
+    public List<User> findByUnsubscribeNotNull() {
+        return userRepository.findByUnsubscribeNotNull();
     }
 
     @Override
@@ -50,8 +50,4 @@ public class UserDAOImpl implements IUserDAO {
         userRepository.delete(user);
     }
 
-    @Override
-    public void deleteById(String id) {
-        userRepository.deleteById(id);
-    }
 }

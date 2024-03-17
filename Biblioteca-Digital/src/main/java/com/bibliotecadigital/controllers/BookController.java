@@ -7,9 +7,9 @@ import com.bibliotecadigital.entities.Publisher;
 import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.error.ErrorException;
-import com.bibliotecadigital.service.IAuthorService;
-import com.bibliotecadigital.service.IBookService;
-import com.bibliotecadigital.service.IPublisherService;
+import com.bibliotecadigital.services.IAuthorService;
+import com.bibliotecadigital.services.IBookService;
+import com.bibliotecadigital.services.IPublisherService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -134,6 +135,8 @@ public class BookController {
     @PostMapping("/register")
     public String registerBook(ModelMap model, @ModelAttribute(name = "book") @Valid BookDto bookDto, BindingResult result) {
 
+        if (bookDto.getAmountCopies() < bookDto.getAmountCopiesBorrowed()) result.addError(new FieldError("bookDto", "amountCopies", "Amount copies cannot be less amount copies borrowed"));
+
         if (result.hasErrors()) {
             model.addAttribute("book", bookDto);
             List<Author> authors = authorService.findAll();
@@ -199,6 +202,8 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/update")
     public String updateBook(ModelMap model, @ModelAttribute(name = "book") @Valid BookDto bookDto, BindingResult result) {
+
+        if (bookDto.getAmountCopies() < bookDto.getAmountCopiesBorrowed()) result.addError(new FieldError("bookDto", "amountCopies", "Amount copies cannot be less amount copies borrowed"));
 
         if (result.hasErrors()) {
             model.addAttribute("book", bookDto);

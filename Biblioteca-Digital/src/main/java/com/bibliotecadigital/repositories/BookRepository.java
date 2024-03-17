@@ -11,19 +11,19 @@ import java.util.List;
 @Repository
 public interface BookRepository extends CrudRepository<Book, String> {
 
-    // Método que devuelve el/los Libro/s vinculado a un Autor:
-    @Query("SELECT a FROM Book a WHERE a.author.id = :id")
-    public List<Book> findByAuthor(@Param("id") String id);
+    // Method return list books for Author
+    @Query("SELECT b FROM Book b WHERE b.author.id =?1")
+    List<Book> findByAuthor(String id);
 
-    // Método que devuelve el/los Libro/s vinculado a una Editorial:
-    @Query("SELECT a FROM Book a WHERE a.publisher.id = :id")
-    public List<Book> findByPublisher(@Param("id") String id);
+    // Method return list books for Publisher
+    @Query("SELECT b FROM Book b WHERE b.publisher.id = :id")
+    List<Book> findByPublisher(@Param("id") String id);
 
-    // Método que devuelve los libros activos
-    @Query("SELECT a FROM Book a WHERE a.unsubscribe IS null")
-    public List<Book> listBookActive();
+    // Method return list books active
+    @Query("SELECT b FROM Book b WHERE b.unsubscribe IS null")
+    List<Book> listBookActive();
 
-    // Método que devuelve los libros inactivos
-    @Query("SELECT a FROM Book a WHERE a.unsubscribe IS NOT null")
-    public List<Book> listBookInactive();
+    // Method return books inactive
+    @Query("SELECT b FROM Book b WHERE b.unsubscribe IS NOT null")
+    List<Book> listBookInactive();
 }

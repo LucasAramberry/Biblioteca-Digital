@@ -24,24 +24,27 @@
             <form th:action="@{/loan/register}" method="POST" enctype="multipart/form-data"
                   th:object="${loan}">
 
-                <p th:if="${error != null}" th:text="${error}" class="error"></p>
-
                 <div class="mb-3">
                     <label for="dateReturn" class="col col-form-label">Fecha devolución</label>
                     <div class="col-sm-10 w-100">
                         <input type="date" class="form-control" id="dateReturn" name="dateReturn"
                                th:field="*{dateReturn}"/>
                     </div>
+                    <span th:errors="*{dateReturn}" class="text-danger"
+                          th:if="${#fields.hasErrors('dateReturn')}"></span>
                 </div>
 
                 <div class="mb-3">
                     <label for="idBook" class="col col-form-label">Libro</label>
                     <div class="col-sm-10 w-100">
                         <select class="form-select" id="idBook" name="idBook">
+                            <option selected disabled>Seleccionar...</option>
                             <option th:each="book : ${books}" th:value="${book.id}"
                                     th:text="${book.title}"></option>
                         </select>
                     </div>
+                    <span th:errors="*{idBook}" class="text-danger"
+                          th:if="${#fields.hasErrors('idBook')}"></span>
                 </div>
 
                 <div sec:authorize="hasRole('ROLE_ADMIN')" class="mb-3">

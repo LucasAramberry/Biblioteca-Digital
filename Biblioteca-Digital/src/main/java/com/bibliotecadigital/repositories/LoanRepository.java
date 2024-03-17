@@ -11,15 +11,15 @@ import java.util.List;
 @Repository
 public interface LoanRepository extends CrudRepository<Loan, Long> {
 
-    // Devuelve los prestamos de un usuario
+    // Return list loans by user
     @Query("SELECT p FROM Loan p WHERE p.user.id = :id")
-    public List<Loan> findByUser(@Param("id") String id);
+    List<Loan> findByUser(@Param("id") String id);
 
-    // Devuelve una Lista con prestamos activos.
+    // Return list loans active.
     @Query("SELECT p FROM Loan p WHERE p.unsubscribe IS null")
-    public List<Loan> findByActive();
+    List<Loan> findByActive();
 
-    // Devuelve una Lista con prestamos dados de baja.
+    // Return list loans inactive.
     @Query("SELECT p FROM Loan p WHERE p.unsubscribe IS NOT null")
-    public List<Loan> findByInactive();
+    List<Loan> findByInactive();
 }

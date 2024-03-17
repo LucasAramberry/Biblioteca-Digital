@@ -26,7 +26,7 @@ public class AuthorDAOImpl implements IAuthorDAO {
     }
 
     @Override
-    public Author findByName(String name) {
+    public Optional<Author> findByName(String name) {
         return authorRepository.findByName(name);
     }
 

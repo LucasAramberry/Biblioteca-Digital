@@ -11,7 +11,7 @@ public interface IAuthorDAO {
 
     List<Author> findByInactive();
 
-    Author findByName(String name);
+    Optional<Author> findByName(String name);
 
     List<Author> findAll();
 

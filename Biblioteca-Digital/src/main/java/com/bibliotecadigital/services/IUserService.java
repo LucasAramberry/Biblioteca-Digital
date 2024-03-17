@@ -1,11 +1,10 @@
-package com.bibliotecadigital.service;
+package com.bibliotecadigital.services;
 
 import com.bibliotecadigital.dto.UserDto;
 import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IUserService {
 
@@ -25,7 +24,7 @@ public interface IUserService {
 
     List<User> findByActive();
 
-    List<User> findByInactive();
+    List<User> findByUnsubscribeNotNull();
 
     List<User> findAll();
 
@@ -35,5 +34,4 @@ public interface IUserService {
 
     void delete(User user);
 
-    void deleteById(String id);
 }

@@ -55,8 +55,4 @@ public class BookDAOImpl implements IBookDAO {
         bookRepository.delete(book);
     }
 
-    @Override
-    public void deleteById(String id) {
-        bookRepository.deleteById(id);
-    }
 }

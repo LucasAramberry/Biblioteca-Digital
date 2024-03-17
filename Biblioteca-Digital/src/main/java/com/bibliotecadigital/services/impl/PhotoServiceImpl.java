@@ -1,10 +1,10 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IPhotoDAO;
-import com.bibliotecadigital.service.IPhotoService;
+import com.bibliotecadigital.services.IPhotoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,12 +53,12 @@ public class PhotoServiceImpl implements IPhotoService {
 
     @Transactional
     @Override
-    public Photo update(Long idFoto, PhotoDto photoDto) throws ErrorException {
+    public Photo update(Long idPhoto, PhotoDto photoDto) throws ErrorException {
 
         if (!photoDto.getFile().isEmpty() && photoDto.getFile() != null) {
             try {
 
-                Photo photo = findById(idFoto);
+                Photo photo = findById(idPhoto);
                 photo.setName(photoDto.getFile().getName());
                 photo.setMime(photoDto.getFile().getContentType());
                 photo.setContent(photoDto.getFile().getBytes());

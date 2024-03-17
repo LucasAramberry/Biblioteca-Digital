@@ -2,6 +2,7 @@ package com.bibliotecadigital.dto;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class LoanDto {
 
     private LocalDate dateLoan;
 
+    @NotNull(message = "Date devolution cannot be null.")
     @Future(message = "The return date cannot be present or past.")
     private LocalDate dateReturn;
 

@@ -1,4 +1,4 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.mail.SimpleMailMessage;

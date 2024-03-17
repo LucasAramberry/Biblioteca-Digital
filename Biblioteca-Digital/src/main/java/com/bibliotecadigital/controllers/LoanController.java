@@ -4,9 +4,9 @@ import com.bibliotecadigital.dto.LoanDto;
 import com.bibliotecadigital.entities.*;
 import com.bibliotecadigital.enums.Role;
 import com.bibliotecadigital.error.ErrorException;
-import com.bibliotecadigital.service.IBookService;
-import com.bibliotecadigital.service.ILoanService;
-import com.bibliotecadigital.service.IUserService;
+import com.bibliotecadigital.services.IBookService;
+import com.bibliotecadigital.services.ILoanService;
+import com.bibliotecadigital.services.IUserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -104,15 +105,24 @@ public class LoanController {
         //no mandarlo a travez del input hidden del html
         User login = (User) session.getAttribute("usersession");
         if (login == null) {
-            return "redirect:/error";
-        }
-
-        if (result.hasErrors()) {
-            model.addAttribute("loan", loanDto);
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         try {
+            if (loanDto.getIdBook() != null) {
+                if (bookService.findById(loanDto.getIdBook()).getAmountCopiesRemaining() < 1)
+                    result.addError(new FieldError("loanDto", "idBook", "The book entered does not have enough copies available to make the loan."));
+            }
+
+            if (result.hasErrors()) {
+                if (login.getRole().equals(Role.ADMIN)) {
+                    model.put("users", userService.findAll());
+                }
+                List<Book> books = bookService.findAll();
+                model.put("books", books);
+                model.addAttribute("loan", loanDto);
+                return "registro-prestamo.html";
+            }
 
             if (login.getRole().equals(Role.USER)) {
                 loanDto.setIdUser(login.getId());

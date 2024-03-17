@@ -1,6 +1,7 @@
 package com.bibliotecadigital.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,12 +44,15 @@ public class Book {
     private Integer amountPages;
 
     @Column(name = "cantidad_copias")
+    @Min(0)
     private Integer amountCopies;
 
     @Column(name = "cantidad_copias_prestadas")
+    @Min(0)
     private Integer amountCopiesBorrowed;
 
     @Column(name = "cantidad_copias_restantes")
+    @Min(0)
     private Integer amountCopiesRemaining;
 
     @Temporal(TemporalType.TIMESTAMP)

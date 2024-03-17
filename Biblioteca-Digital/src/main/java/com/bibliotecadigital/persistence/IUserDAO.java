@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface IUserDAO {
 
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     List<User> findByActive();
 
-    List<User> findByInactive();
+    List<User> findByUnsubscribeNotNull();
 
     List<User> findAll();
 
@@ -21,5 +21,4 @@ public interface IUserDAO {
 
     void delete(User user);
 
-    void deleteById(String id);
 }

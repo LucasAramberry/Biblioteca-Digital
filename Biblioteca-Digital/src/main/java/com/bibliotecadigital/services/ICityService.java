@@ -1,10 +1,9 @@
-package com.bibliotecadigital.service;
+package com.bibliotecadigital.services;
 
 import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ICityService {
 

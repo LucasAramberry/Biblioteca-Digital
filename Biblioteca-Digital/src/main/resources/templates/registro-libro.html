@@ -103,6 +103,7 @@
                     <label for="idAuthor" class="col col-form-label">Autor</label>
                     <div class="col-sm-10 w-100">
                         <select class="form-select" id="idAuthor" name="idAuthor">
+                            <option selected disabled>Seleccionar...</option>
                             <option th:each="author : ${authors}" th:value="${author.id}" th:field="*{idAuthor}"
                                     th:text="${author.name}"></option>
                         </select>
@@ -114,6 +115,7 @@
                     <label for="idPublisher" class="col col-form-label">Editorial</label>
                     <div class="col-sm-10 w-100">
                         <select class="form-select" id="idPublisher" name="idPublisher">
+                            <option selected disabled>Seleccionar...</option>
                             <option th:each="publisher : ${publishers}" th:value="${publisher.id}"
                                     th:field="*{idPublisher}"
                                     th:text="${publisher.name}"></option>

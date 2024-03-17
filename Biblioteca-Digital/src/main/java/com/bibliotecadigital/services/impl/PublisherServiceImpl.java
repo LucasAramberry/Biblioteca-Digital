@@ -1,12 +1,13 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 import com.bibliotecadigital.dto.PublisherDto;
 import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.entities.Publisher;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IPublisherDAO;
-import com.bibliotecadigital.service.IPhotoService;
-import com.bibliotecadigital.service.IPublisherService;
+import com.bibliotecadigital.services.IBookService;
+import com.bibliotecadigital.services.IPhotoService;
+import com.bibliotecadigital.services.IPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class PublisherServiceImpl implements IPublisherService {
     private IPhotoService photoService;
 
     /**
-     * metodo para registrar editorial
+     * Method for register publisher
      *
      * @param publisherDto
      */
@@ -47,10 +48,11 @@ public class PublisherServiceImpl implements IPublisherService {
     }
 
     /**
-     * metodo para modificar editorial
+     * Method for update publisher
      *
      * @param id
      * @param publisherDto
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -74,42 +76,49 @@ public class PublisherServiceImpl implements IPublisherService {
     }
 
     /**
-     * Metodo para habilitar editorial
+     * Method for habilitate publisher
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void high(String id) throws ErrorException {
 
         Publisher publisher = findById(id);
-        publisher.setUnsubscribe(null);
-        save(publisher);
+        if (publisher.getUnsubscribe() != null) {
+            publisher.setUnsubscribe(null);
+            save(publisher);
+        }
 
         log.info("High publisher");
     }
 
 
     /**
-     * Metodo para deshabilitar editorial
+     * Method for disabled publisher
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void low(String id) throws ErrorException {
 
         Publisher publisher = findById(id);
-        publisher.setUnsubscribe(LocalDateTime.now());
-        save(publisher);
+        if (publisher.getUnsubscribe() == null) {
+            publisher.setUnsubscribe(LocalDateTime.now());
+            save(publisher);
+        }
 
         log.info("Low Publisher with id " + id);
     }
 
     /**
-     * metodo para eliminar editorial
+     * Method for delete publisher
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -122,7 +131,7 @@ public class PublisherServiceImpl implements IPublisherService {
     }
 
     /**
-     * Metodo para devolver las editoriales activas
+     * Method return list for publishers active
      *
      * @return
      */
@@ -133,7 +142,7 @@ public class PublisherServiceImpl implements IPublisherService {
     }
 
     /**
-     * Metodo para devolver las editoriales inactivas
+     * Method return list for publishers inactive
      *
      * @return
      */
@@ -146,11 +155,11 @@ public class PublisherServiceImpl implements IPublisherService {
     @Transactional(readOnly = true)
     @Override
     public Publisher findByName(String name) {
-        return publisherDAO.findByName(name);
+        return publisherDAO.findByName(name).orElseThrow();
     }
 
     /**
-     * Metodo para devolver las editoriales
+     * Method for return publishers
      *
      * @return
      */
@@ -161,7 +170,7 @@ public class PublisherServiceImpl implements IPublisherService {
     }
 
     /**
-     * metodo para buscar editorial por id
+     * Method for find publisher by id
      *
      * @param id
      * @return

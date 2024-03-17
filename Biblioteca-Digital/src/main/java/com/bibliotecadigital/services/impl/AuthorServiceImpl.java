@@ -1,12 +1,12 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 import com.bibliotecadigital.dto.AuthorDto;
 import com.bibliotecadigital.entities.Author;
 import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IAuthorDAO;
-import com.bibliotecadigital.service.IAuthorService;
-import com.bibliotecadigital.service.IPhotoService;
+import com.bibliotecadigital.services.IAuthorService;
+import com.bibliotecadigital.services.IPhotoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class AuthorServiceImpl implements IAuthorService {
     private IPhotoService photoService;
 
     /**
-     * Metodo para registrar autor
+     * Method for create author
      *
      * @param authorDto
      */
@@ -48,9 +48,10 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     /**
-     * metodo para modificar autor
+     * Method for update author
      *
      * @param authorDto
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -74,9 +75,10 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     /**
-     * metodo para eliminar autor
+     * Method for delete author
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -89,41 +91,45 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     /**
-     * metodo para deshabilitar autor
+     * Method for unsubscribe author
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void low(String id) throws ErrorException {
 
         Author author = findById(id);
-        author.setUnsubscribe(LocalDateTime.now());
-
-        save(author);
+        if (author.getUnsubscribe() == null) {
+            author.setUnsubscribe(LocalDateTime.now());
+            save(author);
+        }
 
         log.info("Low Author with id " + id);
     }
 
     /**
-     * Metodo para habilitar autor
+     * Method for active author
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void high(String id) throws ErrorException {
 
         Author author = findById(id);
-
-        author.setUnsubscribe(null);
-        save(author);
+        if (author.getUnsubscribe() != null) {
+            author.setUnsubscribe(null);
+            save(author);
+        }
 
         log.info("High Author");
     }
 
     /**
-     * Metodo para listar autores activos
+     * Method find authors active
      *
      * @return
      */
@@ -134,7 +140,7 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     /**
-     * Metodo para listar autores inactivos
+     * Method find authors inactive
      *
      * @return
      */
@@ -145,7 +151,7 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     /**
-     * metodo para buscar autor por nombre
+     * Method find author by name
      *
      * @param name
      * @return
@@ -153,11 +159,11 @@ public class AuthorServiceImpl implements IAuthorService {
     @Transactional(readOnly = true)
     @Override
     public Author findByName(String name) {
-        return authorDAO.findByName(name);
+        return authorDAO.findByName(name).orElseThrow();
     }
 
     /**
-     * Metodo para listar autores
+     * Method find all authors
      *
      * @return
      */
@@ -168,10 +174,11 @@ public class AuthorServiceImpl implements IAuthorService {
     }
 
     /**
-     * Metodo para buscar autor por id
+     * Method find author by id
      *
      * @param id
      * @return
+     * @throws ErrorException
      */
     @Transactional(readOnly = true)
     @Override
@@ -179,12 +186,22 @@ public class AuthorServiceImpl implements IAuthorService {
         return authorDAO.findById(id).orElseThrow(() -> new ErrorException("The author with id " + id + " was not found."));
     }
 
+    /**
+     * Method save author
+     *
+     * @param author
+     */
     @Transactional
     @Override
     public void save(Author author) {
         authorDAO.save(author);
     }
 
+    /**
+     * Method delete Author by id
+     *
+     * @param id
+     */
     @Transactional
     @Override
     public void deleteById(String id) {

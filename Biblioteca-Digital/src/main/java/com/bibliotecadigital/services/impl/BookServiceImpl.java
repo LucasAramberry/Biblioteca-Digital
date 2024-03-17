@@ -1,13 +1,13 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 import com.bibliotecadigital.dto.BookDto;
 import com.bibliotecadigital.entities.*;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.IBookDAO;
-import com.bibliotecadigital.service.IAuthorService;
-import com.bibliotecadigital.service.IBookService;
-import com.bibliotecadigital.service.IPhotoService;
-import com.bibliotecadigital.service.IPublisherService;
+import com.bibliotecadigital.services.IAuthorService;
+import com.bibliotecadigital.services.IBookService;
+import com.bibliotecadigital.services.IPhotoService;
+import com.bibliotecadigital.services.IPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +33,10 @@ public class BookServiceImpl implements IBookService {
     private IPhotoService photoService;
 
     /**
-     * Metodo para registrar book
+     * Method for create book
      *
      * @param bookDto
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -65,9 +66,10 @@ public class BookServiceImpl implements IBookService {
     }
 
     /**
-     * metodo para modificar book
+     * Method for update book
      *
      * @param bookDto
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -82,10 +84,7 @@ public class BookServiceImpl implements IBookService {
         book.setAmountPages(bookDto.getAmountPages());
         book.setAmountCopies(bookDto.getAmountCopies());
         book.setAmountCopiesBorrowed(bookDto.getAmountCopiesBorrowed());
-
-        //validar que no sean menos los totales q los prestados
         book.setAmountCopiesRemaining(bookDto.getAmountCopies() - bookDto.getAmountCopiesBorrowed());
-
         book.setAuthor(((book.getAuthor().getId() != bookDto.getIdAuthor()) ? authorService.findById(bookDto.getIdAuthor()) : book.getAuthor()));
         book.setPublisher(((book.getPublisher().getId() != bookDto.getIdPublisher()) ? publisherService.findById(bookDto.getIdPublisher()) : book.getPublisher()));
 
@@ -103,9 +102,10 @@ public class BookServiceImpl implements IBookService {
     }
 
     /**
-     * metodo para eliminar book
+     * Method for delete book
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -118,57 +118,59 @@ public class BookServiceImpl implements IBookService {
     }
 
     /**
-     * Metodo para habilitar book
+     * Method for activate book
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void high(String id) throws ErrorException {
 
         Book book = findById(id);
-        book.setUnsubscribe(null);
-        save(book);
-
+        if (book.getUnsubscribe() != null) {
+            book.setUnsubscribe(null);
+            save(book);
+        }
         log.info("High Author");
     }
 
     /**
-     * Metodo para deshabilitar book
+     * Method for unsubscribe book
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void low(String id) throws ErrorException {
 
         Book book = findById(id);
-        book.setUnsubscribe(LocalDateTime.now());
-        save(book);
+        if (book.getUnsubscribe() == null) {
+            book.setUnsubscribe(LocalDateTime.now());
+            save(book);
+        }
 
         log.info("Low Book with id " + id);
     }
 
     /**
-     * Metodo prestamo book. Cuando prestamos restamos los restantes y sumamos a prestados
+     * Method for loan a book. Subtraction the copies remaining and add the copies borrowed
      *
      * @param book
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void lendBook(Book book) throws ErrorException {
-        if (book.getAmountCopiesBorrowed() >= 1) {
-            book.setAmountCopiesBorrowed(book.getAmountCopiesBorrowed() + 1);
-            book.setAmountCopiesRemaining(book.getAmountCopiesRemaining() - 1);
-            save(book);
-            log.info("Book lend");
-        } else {
-            throw new ErrorException("The book entered does not have enough copies available to make the loan.");
-        }
+        book.setAmountCopiesBorrowed(book.getAmountCopiesBorrowed() + 1);
+        book.setAmountCopiesRemaining(book.getAmountCopiesRemaining() - 1);
+        save(book);
+        log.info("Book lend");
     }
 
     /**
-     * metodo para devolver el book que prestamos
+     * Method for restore loan of book
      *
      * @param book
      */
@@ -181,48 +183,96 @@ public class BookServiceImpl implements IBookService {
         log.info("Book devolution");
     }
 
+    /**
+     * Method find books by author
+     *
+     * @param id
+     * @return
+     */
+    @Transactional(readOnly = true)
     @Override
     public List<Book> findByAuthor(String id) {
         return bookDAO.findByAuthor(id);
     }
 
+    /**
+     * Method find books by publisher
+     *
+     * @param id
+     * @return
+     */
+    @Transactional(readOnly = true)
     @Override
     public List<Book> findByPublisher(String id) {
         return bookDAO.findByPublisher(id);
     }
 
+    /**
+     * Method find all books active
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
     @Override
     public List<Book> listBookActive() {
         return bookDAO.listBookActive();
     }
 
+    /**
+     * Method find all books inactive
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
     @Override
     public List<Book> listBookInactive() {
         return bookDAO.listBookInactive();
     }
 
+    /**
+     * Method find all books
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
     @Override
     public List<Book> findAll() {
         return bookDAO.findAll();
     }
 
+    /**
+     * Method find book by id
+     *
+     * @param id
+     * @return
+     * @throws ErrorException
+     */
+    @Transactional(readOnly = true)
     @Override
     public Book findById(String id) throws ErrorException {
         return bookDAO.findById(id).orElseThrow(() -> new ErrorException("The book with id " + id + " was not found."));
     }
 
+    /**
+     * Method save book
+     *
+     * @param book
+     */
+    @Transactional
     @Override
     public void save(Book book) {
         bookDAO.save(book);
     }
 
+    /**
+     * Method for delete book
+     *
+     * @param book
+     */
+    @Transactional
     @Override
     public void delete(Book book) {
         bookDAO.delete(book);
     }
 
-    @Override
-    public void deleteById(String id) {
-        bookDAO.deleteById(id);
-    }
 }

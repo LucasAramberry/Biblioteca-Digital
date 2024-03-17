@@ -1,17 +1,16 @@
-package com.bibliotecadigital.service;
+package com.bibliotecadigital.services;
 
 import com.bibliotecadigital.dto.PhotoDto;
 import com.bibliotecadigital.entities.Photo;
 import com.bibliotecadigital.error.ErrorException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IPhotoService {
 
     Photo register(PhotoDto photoDto);
 
-    Photo update(Long idFoto, PhotoDto photoDto) throws ErrorException;
+    Photo update(Long idPhoto, PhotoDto photoDto) throws ErrorException;
 
     List<Photo> findAll();
 

@@ -1,9 +1,9 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 import com.bibliotecadigital.entities.City;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.ICityDAO;
-import com.bibliotecadigital.service.ICityService;
+import com.bibliotecadigital.services.ICityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

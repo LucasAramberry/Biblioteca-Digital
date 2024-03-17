@@ -1,4 +1,4 @@
-package com.bibliotecadigital.service;
+package com.bibliotecadigital.services;
 
 import com.bibliotecadigital.dto.PublisherDto;
 import com.bibliotecadigital.entities.Publisher;

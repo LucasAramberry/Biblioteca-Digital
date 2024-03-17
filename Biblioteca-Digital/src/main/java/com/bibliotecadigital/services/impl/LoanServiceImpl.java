@@ -1,4 +1,4 @@
-package com.bibliotecadigital.service.impl;
+package com.bibliotecadigital.services.impl;
 
 import com.bibliotecadigital.dto.LoanDto;
 import com.bibliotecadigital.entities.Book;
@@ -6,9 +6,9 @@ import com.bibliotecadigital.entities.Loan;
 import com.bibliotecadigital.entities.User;
 import com.bibliotecadigital.error.ErrorException;
 import com.bibliotecadigital.persistence.ILoanDAO;
-import com.bibliotecadigital.service.IBookService;
-import com.bibliotecadigital.service.ILoanService;
-import com.bibliotecadigital.service.IUserService;
+import com.bibliotecadigital.services.IBookService;
+import com.bibliotecadigital.services.ILoanService;
+import com.bibliotecadigital.services.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +33,10 @@ public class LoanServiceImpl implements ILoanService {
     private IUserService userService;
 
     /**
-     * Metodo para registrar un loan
+     * Method for register loan
      *
      * @param loanDto
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -44,7 +45,7 @@ public class LoanServiceImpl implements ILoanService {
         Book book = bookService.findById(loanDto.getIdBook());
         User user = userService.findById(loanDto.getIdUser());
 
-        //realiza el seteo del ejemplar prestado en el libro
+        //performs the setting of the borrowed copy in the book
         bookService.lendBook(book);
 
         save(Loan
@@ -62,9 +63,10 @@ public class LoanServiceImpl implements ILoanService {
     }
 
     /**
-     * Metodo para modificar un loan
+     * Method for update loan
      *
      * @param loanDto
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -79,9 +81,9 @@ public class LoanServiceImpl implements ILoanService {
         loan.setDateReturn(loanDto.getDateReturn());
 
         if (loan.getBook() != book) {
-            //realizamos el seteo del ejemplar prestado en el libro nuevo
+            //we carry out the setting of the borrowed copy in the new book
             bookService.lendBook(book);
-            //devolvemos el ejemplar del libro que habiamos pedido
+            //We return the copy of the book that we had ordered
             bookService.devolutionBook(loan.getBook());
             loan.setBook(book);
         }
@@ -94,9 +96,10 @@ public class LoanServiceImpl implements ILoanService {
     }
 
     /**
-     * metodo para eliminar un loan
+     * Method for delete loan
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -104,8 +107,8 @@ public class LoanServiceImpl implements ILoanService {
 
         Loan loan = findById(id);
 
-        //verificamos si el loan esta dado de alta ya que debemos devolver el ejemplar
-        // si esta de baja dando la baja automaticamente se devuelve el ejemplar del libro
+        //We verify if the loan is registered since we must return the copy
+        //If you are unsubscribing, the copy of the book is automatically returned
         if (loan.getUnsubscribe() == null) {
             bookService.devolutionBook(loan.getBook());
         }
@@ -116,9 +119,10 @@ public class LoanServiceImpl implements ILoanService {
     }
 
     /**
-     * Metodo para habilitar un loan
+     * Method for habilitate loan
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
@@ -126,10 +130,10 @@ public class LoanServiceImpl implements ILoanService {
 
         Loan loan = findById(id);
 
-        //chequeamos que la fecha de devolucion sea posterior a la actual para poder volver habilitar el loan
-        if (loan.getDateReturn().isAfter(LocalDate.now())) {
+        //We check that the return date is later than the current one to be able to re-enable the loan
+        if (loan.getUnsubscribe() != null && loan.getDateReturn().isAfter(LocalDate.now())) {
 
-            //realizamos el seteo del ejemplar prestado en el libro nuevo
+            //we carry out the setting of the borrowed copy in the new book
             bookService.lendBook(loan.getBook());
 
             loan.setUnsubscribe(null);
@@ -143,22 +147,22 @@ public class LoanServiceImpl implements ILoanService {
     }
 
     /**
-     * Metodo para deshabilitar un loan
+     * Method to disable loan
      *
      * @param id
+     * @throws ErrorException
      */
     @Transactional
     @Override
     public void low(Long id) throws ErrorException {
 
         Loan loan = findById(id);
-
-        //devolvemos el libro por deshabilitar el loan
-        bookService.devolutionBook(loan.getBook());
-
-        loan.setUnsubscribe(LocalDateTime.now());
-
-        save(loan);
+        if (loan.getUnsubscribe() == null) {
+            //We return the book for disabling the loan
+            bookService.devolutionBook(loan.getBook());
+            loan.setUnsubscribe(LocalDateTime.now());
+            save(loan);
+        }
 
         log.info("Low Loan with id " + id);
     }
@@ -171,7 +175,7 @@ public class LoanServiceImpl implements ILoanService {
 
         loan.setDateReturn(LocalDate.now());
 
-        //devolvemos el libro por deshabilitar el loan
+        //We return the book
         bookService.devolutionBook(loan.getBook());
 
         save(loan);
@@ -179,36 +183,43 @@ public class LoanServiceImpl implements ILoanService {
         log.info("Devolution Loan");
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Loan> findByUser(String id) {
         return loanDAO.findByUser(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Loan> findByActive() {
         return loanDAO.findByActive();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Loan> findByInactive() {
         return loanDAO.findByInactive();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Loan> findAll() {
         return loanDAO.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Loan findById(Long id) throws ErrorException {
         return loanDAO.findById(id).orElseThrow(() -> new ErrorException("The loan with id " + id + " was not found."));
     }
 
+    @Transactional
     @Override
     public void save(Loan loan) {
         loanDAO.save(loan);
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
         loanDAO.deleteById(id);

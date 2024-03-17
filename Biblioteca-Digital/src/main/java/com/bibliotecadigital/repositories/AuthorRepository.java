@@ -3,23 +3,22 @@ package com.bibliotecadigital.repositories;
 import com.bibliotecadigital.entities.Author;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AuthorRepository extends CrudRepository<Author, String> {
 
-    // Devuelve una Lista con autores activos.
+    // Return list with authors active.
     @Query("SELECT a FROM Author a WHERE a.unsubscribe IS null")
-    public List<Author> findByActive();
+    List<Author> findByActive();
 
-    // Devuelve una Lista con autores dados de baja.
+    // Return list with authors inactive.
     @Query("SELECT a FROM Author a WHERE a.unsubscribe IS NOT null")
-    public List<Author> findByInactive();
+    List<Author> findByInactive();
 
-    // Devuelve autor por nombre
-    @Query("SELECT a FROM Author a WHERE a.name = :name")
-    public Author findByName(@Param("name") String name);
+    // Return author for name
+    Optional<Author> findByName(String name);
 }
