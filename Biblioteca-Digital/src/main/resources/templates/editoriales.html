@@ -15,6 +15,7 @@
         <form action="/publisher" method="GET" enctype="multipart/form-data">
             <select class="filtrar-select" name="idPublisher">
                 <option selected disabled>Seleccionar</option>
+                <option>Todos</option>
                 <option th:each="publisher : ${publisherList}" th:value="${publisher.id}"
                         th:text="${publisher.name}"></option>
             </select>

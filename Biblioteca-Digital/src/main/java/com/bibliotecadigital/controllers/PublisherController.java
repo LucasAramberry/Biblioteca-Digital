@@ -48,7 +48,7 @@ public class PublisherController {
 
             if (idPublisher != null) {
                 model.addAttribute("books", bookService.findByPublisher(idPublisher));
-                model.addAttribute("publishers", publisherService.findById(idPublisher));
+                model.addAttribute("publishers", idPublisher.equalsIgnoreCase("todos") ? publisherList : publisherService.findById(idPublisher));
             } else {
                 model.addAttribute("publishers", publisherList.stream().toList());
             }
